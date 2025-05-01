@@ -12,55 +12,58 @@ class StartQuiz:
         Gets number of rounds from user
         """
 
-        self.start_frame = Frame(padx=10, pady=10)
+        self.start_frame = Frame(padx=10, pady=10, bg="#ede69f")
         self.start_frame.grid()
 
         # Strings for labels
 
-        intro_string = ("Welcome! \nIn each round you will be given a set of emojis"
+        intro_string = ("----- Welcome ----- \n\nIn each round you will be given a set of emojis "
                         "that you must use as clue to guess the movie they represent."
-                        "If you get stuck, click the hint button to get a quote from the movie.\n\n"
-                        "To begin, please choose how many rounds you would like to play. Good Luck!")
+                        "If you get stuck, click the hint button to get a quote from the movie.")
 
         # List of labels to be made (text | font | fg)
         start_labels_list = [
             ["Emoji Movie Quiz", ("Arial", "16", "bold"), None],
             [intro_string, ("Arial", "12"), None],
-            ["", "Arial", None]
+            ["How many rounds?", ("Arial", "12", "bold"), "#009900"]
         ]
 
         # Create labels and add them to the reference list...
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
-                               fg=item[2], wraplength=350,
-                               justify="left", pady=10, padx=20)
+                               fg=item[2], wraplength=320,
+                               justify="center", pady=10, padx=20,
+                               bg="#ede69f")
             make_label.grid(row=count)
 
             start_label_ref.append(make_label)
+
+        self.changing_label = start_label_ref[2]
+        self.changing_label.config(pady=0)
 
         # Frame so that entry box and button can be in the same row
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
-                                      width=10)
-        self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=10)
+                                      width=20)
+        self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=0)
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", "16", "bold"),
-                                  fg="#FFFFFF", bg="#0057D8", text="Play", width=10,
+                                  fg="#FFFFFF", bg="#0057D8", text="Play", width=23,
                                   command=self.check_rounds)
-        self.play_button.grid(row=4)
+        self.play_button.grid(row=4, padx=10, pady=10)
 
     def check_rounds(self):
 
         # Retrieve temperature to be converted
         rounds_wanted = self.num_rounds_entry.get()
 
-        # # Reset label and entry box (for when users come back to home screen)
-        # self.error_label.config(fg="#009900", font=("Arial", "12", "bold"))
-        # self.num_rounds_entry.config(bg="#FFFFFF")
+        # Reset label and entry box (for when users come back to home screen)
+        self.changing_label.config(text="How many rounds?", fg="#009900", font=("Arial", "12", "bold"))
+        self.num_rounds_entry.config(bg="#FFFFFF")
 
         has_errors = "no"
 
@@ -82,18 +85,8 @@ class StartQuiz:
         # Display the error if necessary
         if has_errors == "yes":
 
-            error_string = "Oops - Please choose a whole number more than zero."
-
-            # (error_string, ("Arial", "12", "bold"), "#009900")
-
-            make_label = Label(self.start_frame, text=error_string,
-                               font=("Arial", "8", "bold"),
-                               wraplength=350, justify="left",
-                               pady=10, padx=20)
-            make_label.grid(row=2)
-
-            # self.choose_label.config(text=error, fg="#990000",
-            #                          font=("Arial", "10", "bold"))
+            self.changing_label.config(text="Oops - Please enter a whole number more than 0",
+                                       fg="#990000", font=("Arial", "9", "bold"))
             self.num_rounds_entry.config(bg="#F4CCCC")
             self.num_rounds_entry.delete(0, END)
 
