@@ -12,12 +12,12 @@ class StartQuiz:
         Gets number of rounds from user
         """
 
-        self.start_frame = Frame(padx=10, pady=10, bg="#ede69f")
+        # Create frame and setup grid
+        self.start_frame = Frame(padx=10, pady=10)
         self.start_frame.grid()
 
-        # Strings for labels
-
-        intro_string = ("----- Welcome ----- \n\nIn each round you will be given a set of emojis "
+        # String for the intro label
+        intro_string = ("In each round you will be given a set of emojis "
                         "that you must use as clue to guess the movie they represent."
                         "If you get stuck, click the hint button to get a quote from the movie.")
 
@@ -28,19 +28,19 @@ class StartQuiz:
             ["How many rounds?", ("Arial", "12", "bold"), "#009900"]
         ]
 
+        label_names = ['title_label', 'text_label', 'changing_label']
+
         # Create labels and add them to the reference list...
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
                                fg=item[2], wraplength=320,
-                               justify="center", pady=10, padx=20,
-                               bg="#ede69f")
+                               justify="left", pady=10, padx=20)
             make_label.grid(row=count)
 
-            start_label_ref.append(make_label)
-
-        self.changing_label = start_label_ref[2]
-        self.changing_label.config(pady=0)
+            # Assign names to the labels using the index
+            if count < len(label_names):
+                setattr(self, label_names[count], make_label)
 
         # Frame so that entry box and button can be in the same row
         self.entry_area_frame = Frame(self.start_frame)
@@ -52,10 +52,17 @@ class StartQuiz:
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", "16", "bold"),
-                                  fg="#FFFFFF", bg="#0057D8", text="Play", width=23,
-                                  command=self.check_rounds)
+                                  fg="#d99829", bg="#fcfc86", text="Play", width=23,
+                                  command=self.check_rounds, borderwidth=3, relief="raised")
         self.play_button.grid(row=4, padx=10, pady=10)
 
+        # Change all backgrounds at once
+        list_of_background = [self.start_frame, self.entry_area_frame,
+                              self.changing_label, self.title_label, self.text_label]
+        for item in list_of_background:
+            item.config(bg="#f5ebc1")
+
+    # Checks number of rounds enters is a valid input
     def check_rounds(self):
 
         # Retrieve temperature to be converted
@@ -84,7 +91,6 @@ class StartQuiz:
 
         # Display the error if necessary
         if has_errors == "yes":
-
             self.changing_label.config(text="Oops - Please enter a whole number more than 0",
                                        fg="#990000", font=("Arial", "9", "bold"))
             self.num_rounds_entry.config(bg="#F4CCCC")
@@ -112,9 +118,10 @@ class Play:
                                       command=self.close_play)
         self.end_game_button.grid(row=1)
 
+    # Closes the play GUI
     def close_play(self):
         # Reshow root (ie: choose rounds) and end current
-        # game / allow new game to start
+        # quiz / allow new quiz to start
         root.deiconify()
         self.play_box.destroy()
 
