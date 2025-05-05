@@ -21,6 +21,8 @@ class StartQuiz:
                         "that you must use as clue to guess the movie they represent."
                         "If you get stuck, click the hint button to get a quote from the movie.")
 
+        background_colour = "#f5ebc1"
+
         # List of labels to be made (text | font | fg)
         start_labels_list = [
             ["Emoji Movie Quiz", ("Arial", "16", "bold"), None],
@@ -28,13 +30,13 @@ class StartQuiz:
             ["How many rounds?", ("Arial", "12", "bold"), "#009900"]
         ]
 
+        # List of the names that need to be given to the labels
         label_names = ['title_label', 'text_label', 'changing_label']
 
-        # Create labels and add them to the reference list...
-        start_label_ref = []
+        # Create labels and give them names
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
-                               fg=item[2], wraplength=320,
+                               fg=item[2], bg="#f5ebc1", wraplength=320,
                                justify="left", pady=10, padx=20)
             make_label.grid(row=count)
 
@@ -56,11 +58,12 @@ class StartQuiz:
                                   command=self.check_rounds, borderwidth=3, relief="raised")
         self.play_button.grid(row=4, padx=10, pady=10)
 
-        # Change all backgrounds at once
-        list_of_background = [self.start_frame, self.entry_area_frame,
-                              self.changing_label, self.title_label, self.text_label]
-        for item in list_of_background:
-            item.config(bg="#f5ebc1")
+        # # Change all backgrounds at once
+        # list_of_background = [self.start_frame, self.entry_area_frame,
+        #                       self.changing_label, self.title_label, self.text_label]
+        #
+        # for item in list_of_background:
+        #     item.config(bg="#f5ebc1")
 
     # Checks number of rounds enters is a valid input
     def check_rounds(self):
@@ -99,7 +102,7 @@ class StartQuiz:
 
 class Play:
     """
-    Interface for playing the colour Quest Game
+    Interface for playing the Emoji Movie Quiz
     """
 
     def __init__(self, how_many):
