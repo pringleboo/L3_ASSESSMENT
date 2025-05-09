@@ -121,80 +121,78 @@ class Play:
         self.rounds_wanted = IntVar()
         self.rounds_wanted.set(how_many)
 
-        self.game_frame = Frame(self.play_box)
-        self.game_frame.grid(padx=10, pady=10)
+        self.quiz_frame = Frame(self.play_box)
+        self.quiz_frame.grid(padx=10, pady=10)
 
-        # Body font for most labels...
-        body_font = ("Arial", "12")
+        # LABELS
 
         # List for label details (text | font | background | row)
         play_labels_list = [
-            ["Round # of #", ("Arial", "16", "bold"), None, 0],
-            ["Score to beat: #", body_font, "#FFF2CC", 1],
-            ["Choose a colour below. Good luck.", body_font, "#D5E8D4", 2],
-            ["You chose, result", body_font, "#D5E8D4", 4]
+            ["Round # of #", ("Arial", "16", "bold"), 0],
+            ["Image goes here", ("Arial", "24"), 1],
+            ["Select an option", ("Arial", "18"), 3]
         ]
 
         play_labels_ref = []
         for item in play_labels_list:
-            self.make_label = Label(self.game_frame, text=item[0], font=item[1],
-                                    bg=item[2], wraplength=300, justify="left")
-            self.make_label.grid(row=item[3], pady=10, padx=10)
+            self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
+                                    bg="#f5ebc1", wraplength=300, justify="left")
+            self.make_label.grid(row=item[2], pady=10, padx=10)
 
             play_labels_ref.append(item)
 
-        # Retrieve Labels so they can be configured later
-        self.heading_label = play_labels_ref[0]
-        self.target_label = play_labels_ref[1]
-        self.results_label = play_labels_ref[3]
+        # Frame to hold hints and stats buttons
+        self.hints_stats_frame = Frame(self.quiz_frame)
+        self.hints_stats_frame.grid(row=6)
 
-        # Set up colour buttons...
-        self.colour_frame = Frame(self.game_frame)
-        self.colour_frame.grid(row=3)
+        # OPTION BUTTONS
+        self.option_frame = Frame(self.quiz_frame)
+        self.option_frame.grid(row=2)
 
-        self.colour_button_ref = []
-        self.button_colours_list = []
+        self.option_button_ref = []
+        self.option_button_list = []
 
         # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
-            self.colour_button = Button(self.colour_frame, font=("Arial", "12", "bold"),
-                                        text="Colour Name", width=15)
-            self.colour_button.grid(row=item // 2,
+            self.option_button = Button(self.option_frame, font=("Arial", "12", "bold"),
+                                        text="Option", width=15, bg="#f2f2f2")
+            self.option_button.grid(row=item // 2,
                                     column=item % 2,
                                     padx=5, pady=5)
 
-            self.colour_button_ref.append(self.colour_button)
+            self.option_button_ref.append(self.option_button)
 
-            # Frame to hold hints and stats buttons
-            self.hints_stats_frame = Frame(self.game_frame)
-            self.hints_stats_frame.grid(row=6)
+        # CONTROL BUTTONS
 
-            # List for buttons (frame | text | bg | command | width | row | column)
-            control_button_list = [
-                [self.game_frame, "Next Round", "#0057D8",  None, 21, 5, None],
-                [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
-                [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
-                [self.game_frame, "End", "#990000", self.close_play, 21, 7, None],
-            ]
+        # List for buttons (frame | text | bg | command | width | row | column)
+        control_button_list = [
+            [self.quiz_frame, "Next Round", "#1ca1e2", None, 21, 5, None],
+            [self.hints_stats_frame, "Hints", "#f0a30d", None, 10, 0, 0],
+            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 10, 0, 1],
+        ]
 
-            # Create buttons and add to list
-            control_ref_list = []
-            for item in control_button_list:
-                make_control_button = Button(item[0], text=item[1], bg=item[2],
-                                             command=item[3], font=("Arial", "16", "bold"),
-                                             fg="#FFFFFF", width=item[4])
-                make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+        # Create buttons and add to list
+        control_ref_list = []
+        for item in control_button_list:
+            make_control_button = Button(item[0], text=item[1], bg=item[2],
+                                         command=item[3], font=("Arial", "16", "bold"),
+                                         fg="#FFFFFF", width=item[4])
+            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
-                control_ref_list.append(make_control_button)
+            control_ref_list.append(make_control_button)
 
-            # Retrieve next, stats and end button so that they can be configured
-            self.next_button = control_ref_list[0]
-            self.stats_button = control_ref_list[2]
-            self.end_game_button = control_ref_list[3]
+        # Retrieve next, stats and end button so that they can be configured
+        self.next_button = control_ref_list[0]
+        self.hint_button = control_ref_list[1]
+        self.end_button = control_ref_list[2]
 
-            # # Once interface has been created, invoke new
-            # # round function for first round.
-            # self.new_question()
+        # Change the frame backgrounds
+        self.quiz_frame.config(bg="#f5ebc1")
+        self.option_frame.config(bg="#f5ebc1")
+
+        # # Once interface has been created, invoke new
+        # # round function for first round.
+        # self.new_question()
 
     # Closes the play GUI
     def close_play(self):
@@ -208,6 +206,6 @@ class Play:
 
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour Quest")
+    root.title("Emoji Movie Quiz")
     StartQuiz()
     root.mainloop()
