@@ -34,7 +34,7 @@ class StartQuiz:
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
-                               fg=item[2], bg="#f5ebc1", wraplength=320,
+                               fg=item[2], bg=background_colour, wraplength=320,
                                justify="left", pady=10, padx=20)
             make_label.grid(row=count)
 
