@@ -41,7 +41,7 @@ class StartQuiz:
 
             start_label_ref.append(make_label)
 
-            # AAlternative naming method (creates issues)
+            # Alternative naming method (creates issues)
 
             # # List of the names that need to be given to the labels
             # label_names = ['title_label', 'text_label', 'changing_label']
@@ -121,8 +121,10 @@ class Play:
         self.rounds_wanted = IntVar()
         self.rounds_wanted.set(how_many)
 
-        self.quiz_frame = Frame(self.play_box)
-        self.quiz_frame.grid(padx=10, pady=10)
+        self.quiz_frame = Frame(self.play_box, padx=10, pady=10)
+        self.quiz_frame.grid()
+
+        background_colour = "#f5ebc1"
 
         # LABELS
 
@@ -136,7 +138,7 @@ class Play:
         play_labels_ref = []
         for item in play_labels_list:
             self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
-                                    bg="#f5ebc1", wraplength=300, justify="left")
+                                    bg=background_colour, wraplength=300, justify="left")
             self.make_label.grid(row=item[2], pady=10, padx=10)
 
             play_labels_ref.append(item)
@@ -164,11 +166,14 @@ class Play:
 
         # CONTROL BUTTONS
 
+        self.control_frame = Frame(self.quiz_frame)
+        self.control_frame.grid(row=3)
+
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", None, 21, 5, None],
-            [self.hints_stats_frame, "Hints", "#f0a30d", None, 10, 0, 0],
-            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 10, 0, 1],
+            [self.quiz_frame, "Next Round", "#1ca1e2", None, 24, 5, None],
+            [self.hints_stats_frame, "Hints", "#f0a30d", None, 11, 0, 0],
+            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 11, 0, 1],
         ]
 
         # Create buttons and add to list
@@ -177,7 +182,7 @@ class Play:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", "16", "bold"),
                                          fg="#FFFFFF", width=item[4])
-            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+            make_control_button.grid(row=item[5], column=item[6], padx=5)
 
             control_ref_list.append(make_control_button)
 
@@ -187,8 +192,8 @@ class Play:
         self.end_button = control_ref_list[2]
 
         # Change the frame backgrounds
-        self.quiz_frame.config(bg="#f5ebc1")
-        self.option_frame.config(bg="#f5ebc1")
+        self.quiz_frame.config(bg=background_colour)
+        self.option_frame.config(bg=background_colour)
 
         # # Once interface has been created, invoke new
         # # round function for first round.
