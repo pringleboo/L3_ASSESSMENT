@@ -171,9 +171,9 @@ class Play:
 
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", None, 24, 5, None],
-            [self.hints_stats_frame, "Hints", "#f0a30d", None, 11, 0, 0],
-            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 11, 0, 1],
+            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 5, None],
+            [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
+            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
 
         # Create buttons and add to list
@@ -182,7 +182,7 @@ class Play:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", "16", "bold"),
                                          fg="#FFFFFF", width=item[4])
-            make_control_button.grid(row=item[5], column=item[6], padx=5)
+            make_control_button.grid(row=item[5], column=item[6])
 
             control_ref_list.append(make_control_button)
 
@@ -194,10 +194,11 @@ class Play:
         # Change the frame backgrounds
         self.quiz_frame.config(bg=background_colour)
         self.option_frame.config(bg=background_colour)
+        self.hints_stats_frame.config(bg=background_colour)
 
         # # Once interface has been created, invoke new
         # # round function for first round.
-        # self.new_question()
+        # self.new_question()3
 
     # Closes the play GUI
     def close_play(self):
