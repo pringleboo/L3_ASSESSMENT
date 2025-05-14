@@ -1,8 +1,26 @@
+import csv
+import random
 from tkinter import *
 # from functools import partial  # To prevent unwanted windows
 from PIL import Image, ImageTk
-import os, random
 
+
+# Helper Functions...
+
+def get_images(mode):
+    """
+    Retrieves movie name, image file name, and the quote
+    from the csv, so it can be used for the rounds
+    """
+
+    # Retrieve the movie data from csv, put it in a list
+    file = open("000_movie_quotes_emoji.csv", "r")
+    file_names = random.choice(list(csv.reader(file, delimiter=",")))
+    file.close()
+
+    print(file_names)
+
+    return file_names
 
 class StartQuiz:
     """
@@ -128,8 +146,16 @@ class Play:
 
         # IMAGES
 
+        get_images(None)
 
-
+        # # Open the image
+        # image = Image.open(f'image_files/12Monke.png')
+        #
+        # self.full_image = ImageTk.PhotoImage(image)
+        #
+        # # Display the image
+        # self.full_label = Label(self.quiz_frame, image=self.full_image)
+        # self.full_label.grid(row=1)
 
         background_colour = "#f5ebc1"
 
@@ -138,8 +164,8 @@ class Play:
         # List for label details (text | font | background | row)
         play_labels_list = [
             ["Round # of #", ("Arial", "16", "bold"), 0],
-            ["Image goes here", ("Arial", "24"), 1],
-            ["Select an option", ("Arial", "18"), 3]
+            ["Image goes here", ("Arial", "24"), 2],
+            ["Select an option", ("Arial", "18"), 4]
         ]
 
         play_labels_ref = []
@@ -152,11 +178,11 @@ class Play:
 
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
-        self.hints_stats_frame.grid(row=6)
+        self.hints_stats_frame.grid(row=7)
 
         # OPTION BUTTONS
         self.option_frame = Frame(self.quiz_frame)
-        self.option_frame.grid(row=2)
+        self.option_frame.grid(row=3)
 
         self.option_button_ref = []
         self.option_button_list = []
@@ -174,11 +200,11 @@ class Play:
         # CONTROL BUTTONS
 
         self.control_frame = Frame(self.quiz_frame)
-        self.control_frame.grid(row=3)
+        self.control_frame.grid(row=4)
 
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 5, None],
+            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 6, None],
             [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
