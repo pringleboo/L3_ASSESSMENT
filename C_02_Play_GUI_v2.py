@@ -22,6 +22,7 @@ def get_images(mode):
 
     return file_names
 
+
 class StartQuiz:
     """
     Initial Quiz interface (asks users how many rounds they
@@ -146,16 +147,31 @@ class Play:
 
         # IMAGES
 
-        get_images(None)
+        # Randomly select the next movie, place data into a list
+        movie_data = get_images(None)
 
-        # # Open the image
-        # image = Image.open(f'image_files/12Monke.png')
-        #
-        # self.full_image = ImageTk.PhotoImage(image)
-        #
-        # # Display the image
-        # self.full_label = Label(self.quiz_frame, image=self.full_image)
-        # self.full_label.grid(row=1)
+        # Extract the movie name, filename, and quote from the list
+        movie_name = movie_data[0]
+        file_name = f"{movie_data[1]}.png"
+        quote = movie_data[2]
+
+        # Open the image
+        image = Image.open(f'image_files/{file_name}')
+
+        # Get image dimensions
+        width, height = image.size
+
+        sized_image = resize()
+
+        # Crop the left half (can be altered to crop certain widths)
+        # cropped_image = image.crop((120, 0, width * .6, height))
+
+        self.full_image = ImageTk.PhotoImage(image)
+        self.cropped_img = ImageTk.PhotoImage(cropped_image)
+
+        # Display the image
+        self.full_label = Label(self.quiz_frame, image=self.cropped_img)
+        self.full_label.grid(row=1)
 
         background_colour = "#f5ebc1"
 
@@ -164,8 +180,7 @@ class Play:
         # List for label details (text | font | background | row)
         play_labels_list = [
             ["Round # of #", ("Arial", "16", "bold"), 0],
-            ["Image goes here", ("Arial", "24"), 2],
-            ["Select an option", ("Arial", "18"), 4]
+            ["Select an option", ("Arial", "18"), 3]
         ]
 
         play_labels_ref = []
@@ -178,11 +193,11 @@ class Play:
 
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
-        self.hints_stats_frame.grid(row=7)
+        self.hints_stats_frame.grid(row=6)
 
         # OPTION BUTTONS
         self.option_frame = Frame(self.quiz_frame)
-        self.option_frame.grid(row=3)
+        self.option_frame.grid(row=2)
 
         self.option_button_ref = []
         self.option_button_list = []
@@ -200,11 +215,11 @@ class Play:
         # CONTROL BUTTONS
 
         self.control_frame = Frame(self.quiz_frame)
-        self.control_frame.grid(row=4)
+        self.control_frame.grid(row=3)
 
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 6, None],
+            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 5, None],
             [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
