@@ -78,12 +78,12 @@ class StartQuiz:
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
-        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
+        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
                                       width=20)
         self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=0)
 
         # Create play button...
-        self.play_button = Button(self.entry_area_frame, font=("Arial", "16", "bold"),
+        self.play_button = Button(self.entry_area_frame, font=("Arial", 16, "bold"),
                                   fg="#d99829", bg="#fcfc86", text="Play", width=23,
                                   command=self.check_rounds, borderwidth=3, relief="raised")
         self.play_button.grid(row=4, padx=10, pady=10)
@@ -154,23 +154,41 @@ class Play:
         movie_name = movie_data[0]
         file_name = f"{movie_data[1]}.png"
         quote = movie_data[2]
+        num_of_emojis = movie_data[3]
 
         # Open the image
-        image = Image.open(f'image_files/{file_name}')
+        raw_image = Image.open(f'image_files/{file_name}')
 
-        # Get image dimensions
-        width, height = image.size
 
-        sized_image = resize()
+        mode = input("Mode: ")
 
-        # Crop the left half (can be altered to crop certain widths)
-        # cropped_image = image.crop((120, 0, width * .6, height))
 
-        self.full_image = ImageTk.PhotoImage(image)
-        self.cropped_img = ImageTk.PhotoImage(cropped_image)
+        if mode == "n":
+
+            width = 330
+            height = 60
+            resized_image = raw_image.resize((width, height))
+
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
+
+        elif mode == "h":
+
+            # Get image dimensions
+            width, height = raw_image.size
+
+            # Crop the left half (can be altered to crop certain widths)
+            cropped_image = raw_image.crop((120, 0, width * .6, height))
+
+            width = 330
+            height = 60
+            resized_image = cropped_image.resize((width, height))
+
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
 
         # Display the image
-        self.full_label = Label(self.quiz_frame, image=self.cropped_img)
+        self.full_label = Label(self.quiz_frame, image=self.final_image)
         self.full_label.grid(row=1)
 
         background_colour = "#f5ebc1"
@@ -204,7 +222,7 @@ class Play:
 
         # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
-            self.option_button = Button(self.option_frame, font=("Arial", "12", "bold"),
+            self.option_button = Button(self.option_frame, font=("Arial", 12, "bold"),
                                         text="Option", width=15, bg="#f2f2f2")
             self.option_button.grid(row=item // 2,
                                     column=item % 2,
@@ -228,7 +246,7 @@ class Play:
         control_ref_list = []
         for item in control_button_list:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
-                                         command=item[3], font=("Arial", "16", "bold"),
+                                         command=item[3], font=("Arial", 16, "bold"),
                                          fg="#FFFFFF", width=item[4])
             make_control_button.grid(row=item[5], column=item[6])
 
