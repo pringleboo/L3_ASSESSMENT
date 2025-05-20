@@ -14,13 +14,13 @@ def get_images(mode):
     """
 
     # Retrieve the movie data from csv, put it in a list
-    file = open("000_movie_quotes_emoji.csv", "r")
-    file_names = random.choice(list(csv.reader(file, delimiter=",")))
+    file = open("000_movie_quotes_emoji_v2.csv", "r")
+    selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
     file.close()
 
-    print(file_names)
+    print(selected_movie_data)
 
-    return file_names
+    return selected_movie_data
 
 
 class StartQuiz:
@@ -154,7 +154,7 @@ class Play:
         movie_name = movie_data[0]
         file_name = f"{movie_data[1]}.png"
         quote = movie_data[2]
-        num_of_emojis = movie_data[3]
+        num_of_emojis = int(movie_data[3])
 
         # Open the image
         raw_image = Image.open(f'image_files/{file_name}')
@@ -176,9 +176,11 @@ class Play:
 
             # Get image dimensions
             width, height = raw_image.size
+            print(width, height)
 
             # Crop the left half (can be altered to crop certain widths)
-            cropped_image = raw_image.crop((120, 0, width * .6, height))
+            cropped_image = raw_image.crop((50, 0, 50, height))
+            # cropped_image = cropped_image.crop((width / num_of_emojis, 0, width * .6, height))
 
             width = 330
             height = 60
