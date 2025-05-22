@@ -1,7 +1,7 @@
 import csv
 import random
 from tkinter import *
-# from functools import partial  # To prevent unwanted windows
+from functools import partial  # To prevent unwanted windows
 from PIL import Image, ImageTk
 
 
@@ -15,7 +15,8 @@ def get_images(mode):
 
     # Retrieve the movie data from csv, put it in a list
     file = open("000_movie_quotes_emoji_v2.csv", "r")
-    selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
+    # selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
+    selected_movie_data = list(csv.reader('WhoFram.png'))
     file.close()
 
     print(selected_movie_data)
@@ -157,40 +158,49 @@ class Play:
         num_of_emojis = int(movie_data[3])
 
         # Open the image
-        raw_image = Image.open(f'image_files/{file_name}')
+        raw_image = Image.open(f'image_files/TheArti.png')
 
 
-        mode = input("Mode: ")
+        # mode = input("Mode: ")
 
 
-        if mode == "n":
+        # if mode == "n":
+        #
+        #     width = 330
+        #     height = 60
+        #     resized_image = raw_image.resize((width, height))
+        #
+        #     self.final_image = ImageTk.PhotoImage(resized_image)
 
-            width = 330
-            height = 60
-            resized_image = raw_image.resize((width, height))
 
-            self.final_image = ImageTk.PhotoImage(resized_image)
+        # elif mode == "h":
+
+        # Get image dimensions
+        width, height = raw_image.size
+        print(width, height)
+
+        # Crop the left half (can be altered to crop certain widths)
+        # (left | top | right | bottom)
+        print(num_of_emojis)
+        self.cropped_image = ImageTk.PhotoImage(raw_image.crop((width /2, 0, width, height)))
 
 
-        elif mode == "h":
 
-            # Get image dimensions
-            width, height = raw_image.size
-            print(width, height)
+        if num_of_emojis == 4:
+            crop = (width / 2, 0, width - 80, height)
+        elif num_of_emojis == 3:
+            crop = ((width / 2.5), 0, width - 160, height)
+        else:
+            crop = (0, 0, width, height)
 
-            # Crop the left half (can be altered to crop certain widths)
-            cropped_image = raw_image.crop((50, 0, 50, height))
-            # cropped_image = cropped_image.crop((width / num_of_emojis, 0, width * .6, height))
+        self.cropped_image = ImageTk.PhotoImage(raw_image.crop(crop))
 
-            width = 330
-            height = 60
-            resized_image = cropped_image.resize((width, height))
 
-            self.final_image = ImageTk.PhotoImage(resized_image)
-
+        width = 330
+        height = 60
 
         # Display the image
-        self.full_label = Label(self.quiz_frame, image=self.final_image)
+        self.full_label = Label(self.quiz_frame, image=self.cropped_image)
         self.full_label.grid(row=1)
 
         background_colour = "#f5ebc1"
