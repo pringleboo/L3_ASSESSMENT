@@ -15,8 +15,7 @@ def get_images(mode):
 
     # Retrieve the movie data from csv, put it in a list
     file = open("000_movie_quotes_emoji_v2.csv", "r")
-    # selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
-    selected_movie_data = list(csv.reader('WhoFram.png'))
+    selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
     file.close()
 
     print(selected_movie_data)
@@ -151,6 +150,9 @@ class Play:
         # Randomly select the next movie, place data into a list
         movie_data = get_images(None)
 
+        # To test 5 emoji movies
+        # movie_data = ['Who Framed... ', 'WhoFram', 'Quote goes here', '5']
+
         # Extract the movie name, filename, and quote from the list
         movie_name = movie_data[0]
         file_name = f"{movie_data[1]}.png"
@@ -158,54 +160,60 @@ class Play:
         num_of_emojis = int(movie_data[3])
 
         # Open the image
-        raw_image = Image.open(f'image_files/TheArti.png')
+        raw_image = Image.open(f'image_files/{file_name}')
+
+        mode = input("Mode: ")
+
+        if mode == "n":
+            width = 330
+            height = 60
+
+            resized_image = raw_image.resize((width, height))
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
+            # Display the final image in the grid
+            self.full_label = Label(self.quiz_frame, image=self.final_image)
+            self.full_label.grid(row=1)
 
 
-        # mode = input("Mode: ")
-
-
-        # if mode == "n":
-        #
-        #     width = 330
-        #     height = 60
-        #     resized_image = raw_image.resize((width, height))
-        #
-        #     self.final_image = ImageTk.PhotoImage(resized_image)
-
-
-        # elif mode == "h":
-
-        # Get image dimensions
-        width, height = raw_image.size
-        print(width, height)
-
-        # Crop the left half (can be altered to crop certain widths)
-        # (left | top | right | bottom)
-        print(num_of_emojis)
-        self.cropped_image = ImageTk.PhotoImage(raw_image.crop((width /2, 0, width, height)))
-
-
-
-        if num_of_emojis == 4:
-            crop = (width / 2, 0, width - 80, height)
-        elif num_of_emojis == 3:
-            crop = ((width / 2.5), 0, width - 160, height)
         else:
-            crop = (0, 0, width, height)
 
-        self.cropped_image = ImageTk.PhotoImage(raw_image.crop(crop))
+            # Get image dimensions
+            width, height = raw_image.size
+            print(width, height)
 
+            # Crop the left half (can be altered to crop certain widths)
+            # (left | top | right | bottom)
+            print(num_of_emojis)
 
-        width = 330
-        height = 60
+            if num_of_emojis == 4:
+                crop = (width / 2, 0, width - 80, height)
+                height = 151
+            elif num_of_emojis == 3:
+                crop = (width / 2.5, 0, width - 160, height)
+                height = 151
+            else:
+                crop = (width / 1.7, 0, width, height)
+                height = 145
 
-        # Display the image
-        self.full_label = Label(self.quiz_frame, image=self.cropped_image)
-        self.full_label.grid(row=1)
+            # Crop the image based on number of emojis (using if statements above)
+            cropped_image = raw_image.crop(crop)
 
-        background_colour = "#f5ebc1"
+            # Width is the same for all (matches the buttons width)
+            width = 330
+
+            # Scale the cropped image to fit into the grid nicely
+            resized_image = cropped_image.resize((width, height))
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
+            # Display the final image in the grid
+            self.full_label = Label(self.quiz_frame, image=self.final_image)
+            self.full_label.grid(row=1)
+
 
         # LABELS
+
+        background_colour = "#f5ebc1"
 
         # List for label details (text | font | background | row)
         play_labels_list = [
