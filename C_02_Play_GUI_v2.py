@@ -186,17 +186,19 @@ class Play:
             # (left | top | right | bottom)
             print(num_of_emojis)
 
-            if num_of_emojis == 4:
-                crop = (width / 2, 0, width - 80, height)
-                height = 151
-            elif num_of_emojis == 3:
+            # According to number of emojis (3, 4 or 5), set the crop values
+            # that will be used to crop the image to 2 emojis for hard mode
+            if num_of_emojis == 3:
                 crop = (width / 2.5, 0, width - 160, height)
+                height = 151
+            elif num_of_emojis == 4:
+                crop = (width / 2, 0, width - 80, height)
                 height = 151
             else:
                 crop = (width / 1.7, 0, width, height)
                 height = 145
 
-            # Crop the image based on number of emojis (using if statements above)
+            # Crop the image using the crop values from above
             cropped_image = raw_image.crop(crop)
 
             # Width is the same for all (matches the buttons width)
