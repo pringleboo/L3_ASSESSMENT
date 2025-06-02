@@ -47,47 +47,41 @@ class StartQuiz:
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
-        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
+        # Create the entry frame
+        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
                                       width=20)
         self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=0)
 
+        # Create a frame for the play buttons
+        self.play_frame = Frame(self.start_frame)
+        self.play_frame.grid(row=4, padx=10, pady=10)
 
         # Create mode / play buttons
 
-        # # List for buttons (frame | text | bg | command | width | row | column)
-        # play_button_list = [
-        #     [self.normal_button, "Normal Mode", "#1ca1e2", None, 25, 5, 0],
-        #     [self.hard_button, "Hard Mode", "#f0a30d", None, 12, 0, 1],
-        # ]
-        #
-        # # Create buttons and add to list
-        # control_ref_list = []
-        # for item in play_button_list:
-        #     make_control_button = Button(item[0], text=item[1], bg=item[2],
-        #                                  command=item[3], font=("Arial", 16, "bold"),
-        #                                  fg="#FFFFFF", width=item[4])
-        #     make_control_button.grid(row=item[5], column=item[6])
-        #
-        #     control_ref_list.append(make_control_button)
+        # List for buttons (frame | text | bg | command | width | row | column)
+        play_button_list = [
+            [self.play_frame, "Normal Mode", "#1ca1e2", lambda: self.check_rounds("Normal"), 11, 0, 0],
+            [self.play_frame, "Hard Mode", "#f0a30d", lambda: self.check_rounds("Hard"), 11, 0, 1],
+        ]
 
+        # Create buttons and add to list
+        play_ref_list = []
+        for item in play_button_list:
+            make_play_button = Button(item[0], text=item[1], bg=item[2],
+                                         command=item[3], font=("Arial", 16, "bold"),
+                                         fg="#FFFFFF", width=item[4])
+            make_play_button.grid(row=item[5], column=item[6])
 
-        # Create play button...
-        self.play_button = Button(self.entry_area_frame, font=("Arial", "16", "bold"),
-                                  fg="#d99829", bg="#fcfc86", text="Play", width=23,
-                                  command=self.check_rounds, borderwidth=3, relief="raised")
-        self.play_button.grid(row=4, padx=10, pady=10)
-
-
-
+            play_ref_list.append(make_play_button)
 
         # Change the frame backgrounds
         self.start_frame.config(bg=background_colour)
         self.entry_area_frame.config(bg=background_colour)
 
     # Checks number of rounds enters is a valid input
-    def check_rounds(self):
+    def check_rounds(self, mode):
 
-        # Retrieve temperature to be converted
+        # Retrieve rounds wanted from teh entry form
         rounds_wanted = self.num_rounds_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
@@ -96,12 +90,12 @@ class StartQuiz:
 
         has_errors = "no"
 
-        # Checks that the amount to be converted is a number above absolute zero
+        # Checks that the number of rounds wanted is above zero
         try:
             rounds_wanted = int(rounds_wanted)
             if rounds_wanted > 0:
                 # Invoke Play Class (and take across number of rounds)
-                Play(rounds_wanted)
+                Play(rounds_wanted, mode)
                 # Hide root_window (ie: hide rounds choice window)
                 root.withdraw()
 
@@ -124,18 +118,21 @@ class Play:
     Interface for playing the Emoji Movie Quiz
     """
 
-    def __init__(self, how_many):
+    def __init__(self, how_many, mode):
         self.play_box = Toplevel()
 
-        self.game_frame = Frame(self.play_box)
-        self.game_frame.grid(padx=10, pady=10)
+        # Create a mini play frame to test check rounds function
+        self.play_frame = Frame(self.play_box)
+        self.play_frame.grid(padx=10, pady=10)
 
-        self.game_heading_label = Label(self.game_frame, text=f"Round 0 of {how_many}",
-                                        font=("Arial", "16", "bold"))
+        # Create a simple label to check the play inputs work
+        self.game_heading_label = Label(self.play_frame, text=f"Round 0 of {how_many}\n {mode} mode",
+                                        font=("Arial", 16, "bold"))
         self.game_heading_label.grid(row=0)
 
-        self.end_game_button = Button(self.game_frame, text="End Game",
-                                      font=("Arial", "16", "bold"),
+        # Create the end game button
+        self.end_game_button = Button(self.play_frame, text="End Game",
+                                      font=("Arial", 16, "bold"),
                                       fg="#FFFFFF", bg="#990000", width="10",
                                       command=self.close_play)
         self.end_game_button.grid(row=1)
