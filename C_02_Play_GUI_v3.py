@@ -156,16 +156,18 @@ class Play:
         # IMAGES
 
         # Randomly select the next movie, place data into a list
-        movie_data = get_images(None)
+        data_list = get_images(None)
 
-        # Extract the movie name, filename, and quote from the list
-        movie_name = movie_data[0]
-        file_name = f"{movie_data[1]}.png"
-        quote = movie_data[2]
-        num_of_emojis = int(movie_data[3])
+        movie_data(data_list)
 
-        # Open the image
-        raw_image = Image.open(f'image_files/{file_name}')
+        # # Extract the movie name, filename, and quote from the list
+        # movie_name = movie_data[0]
+        # file_name = f"{movie_data[1]}.png"
+        # quote = movie_data[2]
+        # num_of_emojis = int(movie_data[3])
+        #
+        # # Open the image
+        # raw_image = Image.open(f'image_files/{file_name}')
 
         if mode == "Normal":
 
@@ -234,6 +236,9 @@ class Play:
 
             play_labels_ref.append(item)
 
+        # Extract heading label so it can be configured with each new question
+        self.heading_label = play_labels_ref[0]
+
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
         self.hints_stats_frame.grid(row=6)
@@ -242,7 +247,7 @@ class Play:
         self.option_frame = Frame(self.quiz_frame)
         self.option_frame.grid(row=2)
 
-        self.option_button_ref = []
+        self.movie_button_ref = []
         self.option_button_list = []
 
         # Create four buttons in a 2 x 2 grid
@@ -253,7 +258,7 @@ class Play:
                                     column=item % 2,
                                     padx=5, pady=5)
 
-            self.option_button_ref.append(self.option_button)
+            self.movie_button_ref.append(self.option_button)
 
         # CONTROL BUTTONS
 
@@ -287,9 +292,53 @@ class Play:
         self.option_frame.config(bg=background_colour)
         self.hints_stats_frame.config(bg=background_colour)
 
-        # # Once interface has been created, invoke new
-        # # round function for first round.
-        # self.new_question()3
+        # self.stats_button.config(state=DISABLED)
+
+        # Once interface has been created, invoke new
+        # question function for first round.
+        self.new_question()
+
+
+    def new_question(self):
+        """
+        Chooses four colours, works out median for score to beat. Configures
+        buttons with chosen colours
+        """
+
+        # Retrieve number of rounds played, add one to it and configure heading
+        rounds_played = self.rounds_played.get()
+        self.rounds_played.set(rounds_played)
+
+        rounds_wanted = self.rounds_wanted.get()
+
+        # Update heading label with each new question
+        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+
+        # Get round colours and median score...
+        for item in range(1, 3):
+            self.movie_name_list = get_round_colours()
+
+
+        # Configure buttons using foreground and background colours from list
+        # Enable colour buttons (disabled at the end of the last round)
+        for count, item in enumerate(self.movie_button_ref):
+            item.config(text=self.round_colour_list[count][0], state=NORMAL)
+
+        self.next_button.config(state=DISABLED)
+
+    def movie_data(self, list):
+
+        # Randomly select the next movie, place data into a list
+        movie_data = get_images(None)
+
+        # Extract the movie name, filename, and quote from the list
+        movie_name = list[0]
+        file_name = f"{list[1]}.png"
+        quote = list[2]
+        num_of_emojis = int(list[3])
+
+        # Open the image
+        raw_image = Image.open(f'image_files/{file_name}')
 
     # Closes the play GUI
     def close_play(self):
