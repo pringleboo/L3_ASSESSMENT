@@ -5,22 +5,36 @@ from functools import partial  # To prevent unwanted windows
 from PIL import Image, ImageTk
 
 
-# Helper Functions...
-
-def get_images(mode):
+def get_data(mode):
     """
     Retrieves movie name, image file name, and the quote
     from the csv, so it can be used for the rounds
     """
 
-    # Retrieve the movie data from csv, put it in a list
-    file = open("000_movie_quotes_emoji_v2.csv", "r")
-    selected_movie_data = random.choice(list(csv.reader(file, delimiter=",")))
-    file.close()
+    # Create separate lists of data to populate
+    selected_movie_data = []
+    other_movie_names = []
+
+    # Loop 4 times (to get 4 random movies for the 2x2 grid)
+    for i in range(4):
+
+        # Open the csv file and randomly chose a row
+        file = open("000_movie_quotes_emoji_v2.csv", "r")
+        random_movie = random.choice(list(csv.reader(file, delimiter=",")))
+
+        # Let the first random selection be the chosen movie
+        # So the 2nd, 3rd, and 4th loop should only extract a movie name (we need 3 to
+        # be incorrect answers). For these three we don't need to extract any of the other data (e.g. filename)
+        if i >= 1:
+            other_movie_names.append(random_movie[0])
+
+        else:
+            selected_movie_data.append(random_movie)
 
     print(selected_movie_data)
+    print(f"Other names: {other_movie_names}")
 
-    return selected_movie_data
+    return selected_movie_data, other_movie_names
 
 
 class StartQuiz:
@@ -156,18 +170,18 @@ class Play:
         # IMAGES
 
         # Randomly select the next movie, place data into a list
-        data_list = get_images(None)
+        [movie_data, movie_button_options] = get_data(None)
 
-        movie_data(data_list)
+        # Extract the movie name, filename, and quote from the list
+        movie_name = movie_data[0]
+        file_name = f"{movie_data[1]}.png"
+        quote = movie_data[2]
+        num_of_emojis = int(movie_data[3])
 
-        # # Extract the movie name, filename, and quote from the list
-        # movie_name = movie_data[0]
-        # file_name = f"{movie_data[1]}.png"
-        # quote = movie_data[2]
-        # num_of_emojis = int(movie_data[3])
-        #
-        # # Open the image
-        # raw_image = Image.open(f'image_files/{file_name}')
+        print(movie_button_options)
+
+        # Open the image
+        raw_image = Image.open(f'image_files/{file_name}')
 
         if mode == "Normal":
 
@@ -175,7 +189,7 @@ class Play:
             width = 330
             height = 60
 
-            # Resize the image to fit the width of the 4x4 button grid
+            # Resize the image to fit the width of the 2x2 button grid
             # No need to crop the image for Normal Mode
             resized_image = raw_image.resize((width, height))
             self.final_image = ImageTk.PhotoImage(resized_image)
@@ -296,49 +310,48 @@ class Play:
 
         # Once interface has been created, invoke new
         # question function for first round.
-        self.new_question()
+        # self.new_question()
 
 
-    def new_question(self):
-        """
-        Chooses four colours, works out median for score to beat. Configures
-        buttons with chosen colours
-        """
+    # def new_question(self):
+    #     """
+    #     Chooses four colours, works out median for score to beat. Configures
+    #     buttons with chosen colours
+    #     """
+    #
+    #     # Retrieve number of rounds played, add one to it and configure heading
+    #     rounds_played = self.rounds_played.get()
+    #     self.rounds_played.set(rounds_played)
+    #
+    #     rounds_wanted = self.rounds_wanted.get()
+    #
+    #     # Update heading label with each new question
+    #     self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+    #
+    #     # Configure buttons using foreground and background colours from list
+    #     # Enable colour buttons (disabled at the end of the last round)
+    #     for count, item in enumerate(self.movie_button_ref):
+    #         item.config(text=self.round_colour_list[count][0], state=NORMAL)
+    #
+    #     self.next_button.config(state=DISABLED)
 
-        # Retrieve number of rounds played, add one to it and configure heading
-        rounds_played = self.rounds_played.get()
-        self.rounds_played.set(rounds_played)
 
-        rounds_wanted = self.rounds_wanted.get()
+    # def movie_data(self, list):
+    #
+    #     # Randomly select the next movie, place data into a list
+    #     movie_data = get_images(None)
+    #
+    #     # Extract the movie name, filename, and quote from the list
+    #     movie_name = list[0]
+    #     file_name = f"{list[1]}.png"
+    #     quote = list[2]
+    #     num_of_emojis = int(list[3])
 
-        # Update heading label with each new question
-        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
-
-        # Get round colours and median score...
-        for item in range(1, 3):
-            self.movie_name_list = get_round_colours()
+        #
+        # # Open the image
+        # raw_image = Image.open(f'image_files/{file_name}')
 
 
-        # Configure buttons using foreground and background colours from list
-        # Enable colour buttons (disabled at the end of the last round)
-        for count, item in enumerate(self.movie_button_ref):
-            item.config(text=self.round_colour_list[count][0], state=NORMAL)
-
-        self.next_button.config(state=DISABLED)
-
-    def movie_data(self, list):
-
-        # Randomly select the next movie, place data into a list
-        movie_data = get_images(None)
-
-        # Extract the movie name, filename, and quote from the list
-        movie_name = list[0]
-        file_name = f"{list[1]}.png"
-        quote = list[2]
-        num_of_emojis = int(list[3])
-
-        # Open the image
-        raw_image = Image.open(f'image_files/{file_name}')
 
     # Closes the play GUI
     def close_play(self):
