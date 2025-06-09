@@ -5,6 +5,7 @@ from functools import partial  # To prevent unwanted windows
 from PIL import Image, ImageTk
 
 
+
 def get_data(mode):
     """
     Retrieves movie name, image file name, and the quote
@@ -29,12 +30,13 @@ def get_data(mode):
             other_movie_names.append(random_movie[0])
 
         else:
-            selected_movie_data.append(random_movie)
+            selected_movie_data = random_movie
 
-    print(selected_movie_data)
+    print(f"Movie data: {selected_movie_data}")
     print(f"Other names: {other_movie_names}")
 
     return selected_movie_data, other_movie_names
+
 
 
 class StartQuiz:
@@ -177,8 +179,7 @@ class Play:
         file_name = f"{movie_data[1]}.png"
         quote = movie_data[2]
         num_of_emojis = int(movie_data[3])
-
-        print(movie_button_options)
+        self.option_buttons = movie_button_options
 
         # Open the image
         raw_image = Image.open(f'image_files/{file_name}')
@@ -281,7 +282,7 @@ class Play:
 
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", None, 25, 5, None],
+            [self.quiz_frame, "Next Round", "#1ca1e2", self.new_question, 25, 5, None],
             [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
@@ -312,45 +313,35 @@ class Play:
         # question function for first round.
         # self.new_question()
 
+    def new_question(self):
+        """
+        Chooses four colours, works out median for score to beat. Configures
+        buttons with chosen colours
+        """
 
-    # def new_question(self):
-    #     """
-    #     Chooses four colours, works out median for score to beat. Configures
-    #     buttons with chosen colours
-    #     """
-    #
-    #     # Retrieve number of rounds played, add one to it and configure heading
-    #     rounds_played = self.rounds_played.get()
-    #     self.rounds_played.set(rounds_played)
-    #
-    #     rounds_wanted = self.rounds_wanted.get()
-    #
-    #     # Update heading label with each new question
-    #     self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
-    #
-    #     # Configure buttons using foreground and background colours from list
-    #     # Enable colour buttons (disabled at the end of the last round)
-    #     for count, item in enumerate(self.movie_button_ref):
-    #         item.config(text=self.round_colour_list[count][0], state=NORMAL)
-    #
-    #     self.next_button.config(state=DISABLED)
+        # Retrieve number of rounds played, add one to it and configure heading
+        rounds_played = self.rounds_played.get()
+        self.rounds_played.set(rounds_played)
+
+        rounds_wanted = self.rounds_wanted.get()
+
+        # Update heading label with each new question
+        # self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+
+        win_index = random.randint(0, 3)
+        # config(text=movie_name[count + 1], state=NORMAL)
 
 
-    # def movie_data(self, list):
-    #
-    #     # Randomly select the next movie, place data into a list
-    #     movie_data = get_images(None)
-    #
-    #     # Extract the movie name, filename, and quote from the list
-    #     movie_name = list[0]
-    #     file_name = f"{list[1]}.png"
-    #     quote = list[2]
-    #     num_of_emojis = int(list[3])
+        # Configure buttons using foreground and background colours from list
+        # Enable colour buttons (disabled at the end of the last round)
+        for item in enumerate(self.movie_button_ref):
+            
+            if count == win_index:
+                item.config(text=self.option_buttons[count + 1], state=NORMAL)
+            else:
+                item.config(text=self.option_buttons[count], state=NORMAL)
 
-        #
-        # # Open the image
-        # raw_image = Image.open(f'image_files/{file_name}')
-
+        self.next_button.config(state=DISABLED)
 
 
     # Closes the play GUI
