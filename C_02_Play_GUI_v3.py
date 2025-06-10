@@ -172,14 +172,15 @@ class Play:
         # IMAGES
 
         # Randomly select the next movie, place data into a list
-        [movie_data, movie_button_options] = get_data(None)
+        [movie_data, self.movie_button_options] = get_data(None)
 
         # Extract the movie name, filename, and quote from the list
         movie_name = movie_data[0]
         file_name = f"{movie_data[1]}.png"
         quote = movie_data[2]
         num_of_emojis = int(movie_data[3])
-        self.option_buttons = movie_button_options
+        self.movie_button_options.append(movie_name)
+
 
         # Open the image
         raw_image = Image.open(f'image_files/{file_name}')
@@ -263,7 +264,6 @@ class Play:
         self.option_frame.grid(row=2)
 
         self.movie_button_ref = []
-        self.option_button_list = []
 
         # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
@@ -311,7 +311,7 @@ class Play:
 
         # Once interface has been created, invoke new
         # question function for first round.
-        # self.new_question()
+        self.new_question()
 
     def new_question(self):
         """
@@ -331,15 +331,21 @@ class Play:
         win_index = random.randint(0, 3)
         # config(text=movie_name[count + 1], state=NORMAL)
 
+        # Shuffle buttons lists so they display in random positions
+        random.shuffle(self.movie_button_options)
 
-        # Configure buttons using foreground and background colours from list
-        # Enable colour buttons (disabled at the end of the last round)
-        for item in enumerate(self.movie_button_ref):
-            
-            if count == win_index:
-                item.config(text=self.option_buttons[count + 1], state=NORMAL)
+        # Configure buttons text as the names of the random movies generated for the question
+        # Enable option buttons (disabled at the end of the last round)
+        for count, item in enumerate(self.movie_button_ref):
+
+            if len(self.movie_button_options[count]) > 10:
+                font_size = 8
+
             else:
-                item.config(text=self.option_buttons[count], state=NORMAL)
+                font_size = 12
+
+            item.config(text=self.movie_button_options[count], font=("Arial", font_size, "bold"), state=NORMAL)
+
 
         self.next_button.config(state=DISABLED)
 
