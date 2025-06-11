@@ -250,10 +250,11 @@ class Play:
                                     bg=background_colour, wraplength=300, justify="left")
             self.make_label.grid(row=item[2], pady=10, padx=10)
 
-            play_labels_ref.append(item)
+            play_labels_ref.append(self.make_label)
 
         # Extract heading label so it can be configured with each new question
         self.heading_label = play_labels_ref[0]
+        print(self.heading_label)
 
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
@@ -267,11 +268,11 @@ class Play:
 
         # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
+
             self.option_button = Button(self.option_frame, font=("Arial", 12, "bold"),
-                                        text="Option", width=15, bg="#f2f2f2")
-            self.option_button.grid(row=item // 2,
-                                    column=item % 2,
-                                    padx=5, pady=5)
+                                        text="Option", width=32, bg="#f2f2f2")
+            self.option_button.grid(row=item,
+                                    padx=5, pady=2)
 
             self.movie_button_ref.append(self.option_button)
 
@@ -326,7 +327,7 @@ class Play:
         rounds_wanted = self.rounds_wanted.get()
 
         # Update heading label with each new question
-        # self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
 
         win_index = random.randint(0, 3)
         # config(text=movie_name[count + 1], state=NORMAL)
@@ -338,14 +339,7 @@ class Play:
         # Enable option buttons (disabled at the end of the last round)
         for count, item in enumerate(self.movie_button_ref):
 
-            if len(self.movie_button_options[count]) > 10:
-                font_size = 8
-
-            else:
-                font_size = 12
-
-            item.config(text=self.movie_button_options[count], font=("Arial", font_size, "bold"), state=NORMAL)
-
+            item.config(text=self.movie_button_options[count], state=NORMAL)
 
         self.next_button.config(state=DISABLED)
 
