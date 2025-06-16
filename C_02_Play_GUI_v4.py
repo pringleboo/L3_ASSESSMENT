@@ -6,36 +6,7 @@ from PIL import Image, ImageTk
 
 
 
-def get_data(mode):
-    """
-    Retrieves movie name, image file name, and the quote
-    from the csv, so it can be used for the rounds
-    """
 
-    # Create separate lists of data to populate
-    selected_movie_data = []
-    other_movie_names = []
-
-    # Loop 4 times (to get 4 random movies for the 2x2 grid)
-    for i in range(4):
-
-        # Open the csv file and randomly chose a row
-        file = open("000_movie_quotes_emoji_v2.csv", "r")
-        random_movie = random.choice(list(csv.reader(file, delimiter=",")))
-
-        # Let the first random selection be the chosen movie
-        # So the 2nd, 3rd, and 4th loop should only extract a movie name (we need 3 to
-        # be incorrect answers). For these three we don't need to extract any of the other data (e.g. filename)
-        if i >= 1:
-            other_movie_names.append(random_movie[0])
-
-        else:
-            selected_movie_data = random_movie
-
-    print(f"Movie data: {selected_movie_data}")
-    print(f"Other names: {other_movie_names}")
-
-    return selected_movie_data, other_movie_names
 
 
 
@@ -158,6 +129,15 @@ class Play:
 
     def __init__(self, how_many, mode):
 
+        self.full_label = None
+        self.final_image = None
+        self.movie_button_options = []
+        self.num_of_emojis = None
+        self.quote = None
+        self.file_name = None
+        self.movie_name = None
+        self.other_movie_names = None
+        self.selected_movie_data = None
         self.play_box = Toplevel()
 
         # Create win index variable
@@ -175,67 +155,17 @@ class Play:
 
         # IMAGES
 
-        # Randomly select the next movie, place data into a list
-        [movie_data, self.movie_button_options] = get_data(None)
+        # # Randomly select the next movie, place data into a list
+        # [movie_data, self.movie_button_options] = get_data(None)
+        #
+        # # Extract the movie name, filename, and quote from the list
+        # self.movie_name = movie_data[0]
+        # file_name = f"{movie_data[1]}.png"
+        # quote = movie_data[2]
+        # num_of_emojis = int(movie_data[3])
+        # self.movie_button_options.append(self.movie_name)
 
-        # Extract the movie name, filename, and quote from the list
-        self.movie_name = movie_data[0]
-        file_name = f"{movie_data[1]}.png"
-        quote = movie_data[2]
-        num_of_emojis = int(movie_data[3])
-        self.movie_button_options.append(self.movie_name)
-
-
-        # Open the image
-        raw_image = Image.open(f'image_files/{file_name}')
-
-        if mode == "Normal":
-
-            # Hard code width and height values for ideal image resize
-            width = 330
-            height = 60
-
-            # Resize the image to fit the width of the 2x2 button grid
-            # No need to crop the image for Normal Mode
-            resized_image = raw_image.resize((width, height))
-            self.final_image = ImageTk.PhotoImage(resized_image)
-
-            # Display the final image in the grid
-            self.full_label = Label(self.quiz_frame, image=self.final_image)
-            self.full_label.grid(row=1)
-
-
-        # When mode is 'Hard'
-        else:
-
-            # Get image dimensions
-            width, height = raw_image.size
-
-            # According to number of emojis (3, 4 or 5), set the crop values
-            # that will be used to crop the image to 2 emojis for hard mode
-            if num_of_emojis == 3:
-                crop = (width / 2.5, 0, width - 160, height)
-                height = 151
-            elif num_of_emojis == 4:
-                crop = (width / 2, 0, width - 80, height)
-                height = 151
-            else:
-                crop = (width / 1.7, 0, width, height)
-                height = 145
-
-            # Crop the image using the crop values from above
-            cropped_image = raw_image.crop(crop)
-
-            # Width is the same for all (matches the buttons width)
-            width = 330
-
-            # Scale the cropped image to fit into the grid nicely
-            resized_image = cropped_image.resize((width, height))
-            self.final_image = ImageTk.PhotoImage(resized_image)
-
-            # Display the final image in the grid
-            self.full_label = Label(self.quiz_frame, image=self.final_image)
-            self.full_label.grid(row=1)
+        self.get_data()
 
 
         # LABELS
@@ -319,6 +249,98 @@ class Play:
         # question function for first round.
         self.new_question()
 
+
+    def get_data(self):
+        """
+        Retrieves movie name, image file name, and the quote
+        from the csv, so it can be used for the rounds
+        """
+
+        # Create separate lists of data to populate
+        self.selected_movie_data = []
+        self.other_movie_names = []
+
+        # Loop 4 times (to get 4 random movies for the 2x2 grid)
+        for i in range(4):
+
+            # Open the csv file and randomly chose a row
+            file = open("000_movie_quotes_emoji_v2.csv", "r")
+            random_movie = random.choice(list(csv.reader(file, delimiter=",")))
+
+            # Let the first random selection be the chosen movie
+            # So the 2nd, 3rd, and 4th loop should only extract a movie name (we need 3 to
+            # be incorrect answers). For these three we don't need to extract any of the other data (e.g. filename)
+            if i >= 1:
+                self.other_movie_names.append(random_movie[0])
+
+            else:
+                self.selected_movie_data = random_movie
+
+        # Extract the movie name, filename, and quote from the list
+        self.movie_name = self.selected_movie_data[0]
+        self.file_name = f"{self.selected_movie_data[1]}.png"
+        self.quote = self.selected_movie_data[2]
+        self.num_of_emojis = int(self.selected_movie_data[3])
+
+        self.movie_button_options.append(self.movie_name)
+
+        self.image_display(self)
+
+
+    def image_display(self, mode):
+
+        # Open the image
+        raw_image = Image.open(f'image_files/{self.file_name}')
+
+        if mode == "Normal":
+
+            # Hard code width and height values for ideal image resize
+            width = 330
+            height = 60
+
+            # Resize the image to fit the width of the 2x2 button grid
+            # No need to crop the image for Normal Mode
+            resized_image = raw_image.resize((width, height))
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
+            # Display the final image in the grid
+            self.full_label = Label(self.quiz_frame, image=self.final_image)
+            self.full_label.grid(row=1)
+
+
+        # When mode is 'Hard'
+        else:
+
+            # Get image dimensions
+            width, height = raw_image.size
+
+            # According to number of emojis (3, 4 or 5), set the crop values
+            # that will be used to crop the image to 2 emojis for hard mode
+            if self.num_of_emojis == 3:
+                crop = (width / 2.5, 0, width - 160, height)
+                height = 151
+            elif self.num_of_emojis == 4:
+                crop = (width / 2, 0, width - 80, height)
+                height = 151
+            else:
+                crop = (width / 1.7, 0, width, height)
+                height = 145
+
+            # Crop the image using the crop values from above
+            cropped_image = raw_image.crop(crop)
+
+            # Width is the same for all (matches the buttons width)
+            width = 330
+
+            # Scale the cropped image to fit into the grid nicely
+            resized_image = cropped_image.resize((width, height))
+            self.final_image = ImageTk.PhotoImage(resized_image)
+
+            # Display the final image in the grid
+            self.full_label = Label(self.quiz_frame, image=self.final_image)
+            self.full_label.grid(row=1)
+
+
     def new_question(self):
         """
         Configures round heading, and fills out option button in a shuffled order,
@@ -369,7 +391,7 @@ class Play:
         # target = self.target_score.get()
 
         if user_choice == self.win_index:
-            result_text = "CORRECT!!!"
+            result_text = "Correct!"
             print(result_text)
             label_colour = "#009900" # green text
             # self.all_scores_list.append(score)
@@ -379,17 +401,17 @@ class Play:
             # self.rounds_won.set(rounds_won)
 
         else:
-            result_text = "INCORRECT..."
+            result_text = "Incorrect"
             print(result_text)
             label_colour = "#ff3232" # red text
             # self.all_scores_list.append(0)
 
         self.play_changing_label.config(text=result_text, fg=label_colour)
 
-        # # Enables stats & next buttons, disable colour buttons
-        # self.next_button.config(state=NORMAL)
-        # self.stats_button.config(state=NORMAL)
-        #
+        # Enables stats & next buttons, disable colour buttons
+        self.next_button.config(state=NORMAL)
+        self.hint_button.config(state=DISABLED)
+
         # # Get user score and colour based on button press...
         # score = int(self.round_colour_list[user_choice][1])
         #
