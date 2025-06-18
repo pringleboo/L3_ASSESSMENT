@@ -129,6 +129,7 @@ class Play:
 
     def __init__(self, how_many, mode):
 
+        self.rounds_won = IntVar()
         self.full_label = None
         self.final_image = None
         self.movie_button_options = []
@@ -164,9 +165,6 @@ class Play:
         # quote = movie_data[2]
         # num_of_emojis = int(movie_data[3])
         # self.movie_button_options.append(self.movie_name)
-
-        self.get_data()
-
 
         # LABELS
 
@@ -250,6 +248,40 @@ class Play:
         self.new_question()
 
 
+    def new_question(self):
+        """
+        Configures round heading, and fills out option button in a shuffled order,
+        then disables next question button.
+        """
+
+        # Generate data to populate the GUI with
+        self.get_data()
+
+        # Retrieve number of rounds played, add one to it and configure heading
+        rounds_played = self.rounds_played.get()
+        rounds_wanted = self.rounds_wanted.get()
+
+        # Update heading label with each new question
+        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+
+        # Shuffle buttons lists so they display in random positions
+        random.shuffle(self.movie_button_options)
+        print(f"Shuffled movie button options: {self.movie_button_options}")
+
+        # Get the win index
+        self.win_index = self.movie_button_options.index(self.movie_name)
+
+        # Configure buttons text as the names of the random movies generated for the question
+        # Enable option buttons (disabled at the end of the last round)
+
+
+        for count, item in enumerate(self.movie_button_ref):
+
+            item.config(text=self.movie_button_options[count], state=NORMAL)
+
+        self.next_button.config(state=DISABLED)
+
+
     def get_data(self):
         """
         Retrieves movie name, image file name, and the quote
@@ -282,6 +314,7 @@ class Play:
         self.quote = self.selected_movie_data[2]
         self.num_of_emojis = int(self.selected_movie_data[3])
 
+        self.movie_button_options = self.other_movie_names
         self.movie_button_options.append(self.movie_name)
 
         self.image_display(self)
@@ -341,36 +374,6 @@ class Play:
             self.full_label.grid(row=1)
 
 
-    def new_question(self):
-        """
-        Configures round heading, and fills out option button in a shuffled order,
-        then disables next question button.
-        """
-
-        # Retrieve number of rounds played, add one to it and configure heading
-        rounds_played = self.rounds_played.get()
-        self.rounds_played.set(rounds_played)
-
-        rounds_wanted = self.rounds_wanted.get()
-
-        # Update heading label with each new question
-        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
-
-        # Shuffle buttons lists so they display in random positions
-        random.shuffle(self.movie_button_options)
-
-        # Get the win index
-        self.win_index = self.movie_button_options.index(self.movie_name)
-
-        # Configure buttons text as the names of the random movies generated for the question
-        # Enable option buttons (disabled at the end of the last round)
-        for count, item in enumerate(self.movie_button_ref):
-
-            item.config(text=self.movie_button_options[count], state=NORMAL)
-
-        self.next_button.config(state=DISABLED)
-
-
     def round_results(self, user_choice):
         """
         Retrieves which button was pushed (index 0 - 3), retrieves
@@ -379,7 +382,7 @@ class Play:
         """
 
         print(user_choice)
-        print(f"Win index: {self.win_index}")
+        print(f"Win button number: {self.win_index + 1}")
 
         # Get user score and colour based on button press...
         # choice = int(self.round_colour_list[user_choice][1])
@@ -393,18 +396,17 @@ class Play:
         if user_choice == self.win_index:
             result_text = "Correct!"
             print(result_text)
-            label_colour = "#009900" # green text
-            # self.all_scores_list.append(score)
+            label_colour = "#009900" # green text for changing label
 
-            # rounds_won = self.rounds_won.get()
-            # rounds_won += 1
-            # self.rounds_won.set(rounds_won)
+            # Add 1 to the number round rounds won
+            rounds_won = self.rounds_won.get()
+            rounds_won += 1
+            self.rounds_won.set(rounds_won)
 
         else:
             result_text = "Incorrect"
             print(result_text)
-            label_colour = "#ff3232" # red text
-            # self.all_scores_list.append(0)
+            label_colour = "#ff3232" # red text for changing label
 
         self.play_changing_label.config(text=result_text, fg=label_colour)
 
@@ -412,15 +414,12 @@ class Play:
         self.next_button.config(state=NORMAL)
         self.hint_button.config(state=DISABLED)
 
-        # # Get user score and colour based on button press...
-        # score = int(self.round_colour_list[user_choice][1])
-        #
-        # # Add one to the number of rounds played and retrieve
-        # # the number of rounds won
-        # rounds_played = self.rounds_played.get()
-        # rounds_played += 1
-        # self.rounds_played.set(rounds_played)
-        #
+        # Add one to the number of rounds played and retrieve
+        # the number of rounds won
+        rounds_played = self.rounds_played.get()
+        rounds_played += 1
+        self.rounds_played.set(rounds_played)
+
         # # Check to see if game is over
         # rounds_wanted = self.rounds_wanted.get()
         #
