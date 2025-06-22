@@ -209,6 +209,7 @@ class Play:
 
             self.movie_button_ref.append(self.option_button)
 
+
         # CONTROL BUTTONS
 
         self.control_frame = Frame(self.quiz_frame)
@@ -245,21 +246,24 @@ class Play:
 
         # Once interface has been created, invoke new
         # question function for first round.
-        self.new_question()
+        self.new_question(mode)
 
 
-    def new_question(self):
+    def new_question(self, mode):
         """
         Configures round heading, and fills out option button in a shuffled order,
         then disables next question button.
         """
 
         # Generate data to populate the GUI with
-        self.get_data()
+        self.get_data(mode)
 
         # Retrieve number of rounds played, add one to it and configure heading
         rounds_played = self.rounds_played.get()
         rounds_wanted = self.rounds_wanted.get()
+
+        # Reset changing label
+        self.play_changing_label.config(text="Select an option", fg="#000000")
 
         # Update heading label with each new question
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
@@ -277,12 +281,12 @@ class Play:
 
         for count, item in enumerate(self.movie_button_ref):
 
-            item.config(text=self.movie_button_options[count], state=NORMAL)
+            item.config(text=self.movie_button_options[count], bg="#f2f2f2", state=NORMAL)
 
         self.next_button.config(state=DISABLED)
 
 
-    def get_data(self):
+    def get_data(self, mode):
         """
         Retrieves movie name, image file name, and the quote
         from the csv, so it can be used for the rounds
@@ -317,10 +321,16 @@ class Play:
         self.movie_button_options = self.other_movie_names
         self.movie_button_options.append(self.movie_name)
 
-        self.image_display(self)
+        self.image_display(self, mode)
 
 
     def image_display(self, mode):
+
+        print(f"MODE: {mode}")
+        print(f"MODE: {mode}")
+        print(f"MODE: {mode}")
+        print(f"MODE: {mode}")
+
 
         # Open the image
         raw_image = Image.open(f'image_files/{self.file_name}')
@@ -397,16 +407,24 @@ class Play:
             result_text = "Correct!"
             print(result_text)
             label_colour = "#009900" # green text for changing label
+            selected_btn_bg = "#00E000" # green background colour for selected button
 
             # Add 1 to the number round rounds won
             rounds_won = self.rounds_won.get()
             rounds_won += 1
             self.rounds_won.set(rounds_won)
 
+
         else:
             result_text = "Incorrect"
             print(result_text)
             label_colour = "#ff3232" # red text for changing label
+            selected_btn_bg = "#ff3232" # red background colour for selected button
+
+            # Highlight the correct button as green so users can compare their answer
+            self.movie_button_ref[self.win_index].config(bg="#00E000")
+
+        self.movie_button_ref[user_choice].config(bg=selected_btn_bg)
 
         self.play_changing_label.config(text=result_text, fg=label_colour)
 
