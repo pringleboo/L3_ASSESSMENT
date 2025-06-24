@@ -217,7 +217,7 @@ class Play:
 
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#1ca1e2", self.new_question, 25, 5, None],
+            [self.quiz_frame, "Next Round", "#1ca1e2", lambda: self.new_question(mode), 25, 5, None],
             [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
@@ -278,7 +278,6 @@ class Play:
         # Configure buttons text as the names of the random movies generated for the question
         # Enable option buttons (disabled at the end of the last round)
 
-
         for count, item in enumerate(self.movie_button_ref):
 
             item.config(text=self.movie_button_options[count], bg="#f2f2f2", state=NORMAL)
@@ -321,16 +320,10 @@ class Play:
         self.movie_button_options = self.other_movie_names
         self.movie_button_options.append(self.movie_name)
 
-        self.image_display(self, mode)
+        self.image_display(mode)
 
 
     def image_display(self, mode):
-
-        print(f"MODE: {mode}")
-        print(f"MODE: {mode}")
-        print(f"MODE: {mode}")
-        print(f"MODE: {mode}")
-
 
         # Open the image
         raw_image = Image.open(f'image_files/{self.file_name}')
