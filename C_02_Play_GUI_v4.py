@@ -218,7 +218,7 @@ class Play:
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
             [self.quiz_frame, "Next Round", "#1ca1e2", lambda: self.new_question(mode), 25, 5, None],
-            [self.hints_stats_frame, "Hints", "#f0a30d", None, 12, 0, 0],
+            [self.hints_stats_frame, "Hints", "#f0a30d", self.display_hint, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
 
@@ -283,6 +283,7 @@ class Play:
             item.config(text=self.movie_button_options[count], bg="#f2f2f2", state=NORMAL)
 
         self.next_button.config(state=DISABLED)
+        self.hint_button.config(state=NORMAL)
 
 
     def get_data(self, mode):
@@ -387,15 +388,6 @@ class Play:
         print(user_choice)
         print(f"Win button number: {self.win_index + 1}")
 
-        # Get user score and colour based on button press...
-        # choice = int(self.round_colour_list[user_choice][1])
-
-        # Alternate way to get button name. Good for if buttons have been scrambled!
-        # colour_name = self.colour_button_ref[user_choice].cget('text')
-
-        # Retrieve target score and compare with user score to find round result
-        # target = self.target_score.get()
-
         if user_choice == self.win_index:
             result_text = "Correct!"
             print(result_text)
@@ -419,7 +411,7 @@ class Play:
 
         self.movie_button_ref[user_choice].config(bg=selected_btn_bg)
 
-        self.play_changing_label.config(text=result_text, fg=label_colour)
+        self.play_changing_label.config(text=result_text, fg=label_colour, font=("Arial", 18))
 
         # Enables stats & next buttons, disable colour buttons
         self.next_button.config(state=NORMAL)
@@ -431,37 +423,85 @@ class Play:
         rounds_played += 1
         self.rounds_played.set(rounds_played)
 
-        # # Check to see if game is over
-        # rounds_wanted = self.rounds_wanted.get()
-        #
-        # rounds_won = self.rounds_won.get()
-        #
-        # # Code for when game ends
-        # if rounds_played == rounds_wanted:
-        #     # Work out success rate
-        #     success_rate = rounds_won / rounds_played * 100
-        #     success_string = (f"Success Rate: "
-        #                       f"{rounds_won} / {rounds_played}"
-        #                       f"({success_rate:.0f}%")
-        #
-        #     # Configure end game labels / buttons
-        #     self.heading_label.config(text="Game Over")
-        #     self.target_label.config(text=success_string)
-        #     self.choose_label.config(text="Please click the stats"
-        #                                   "button for more info.")
-        #     self.next_button.config(state=DISABLED, text="Game Over")
-        #     self.stats_button.config(bg="#990000")
-        #     self.end_game_button.config(text="Play Again", bg="#006600")
-        #
-        # for item in self.colour_button_ref:
-        #     item.config(state=DISABLED)
+        # Check to see if game is over
+        rounds_wanted = self.rounds_wanted.get()
+
+        rounds_won = self.rounds_won.get()
+
+        # Code for when game ends
+        if rounds_played == rounds_wanted:
+            # Work out success rate
+            print(f"You won {rounds_won} out of {rounds_played}")
+
+            # Configure end game labels / buttons
+            self.heading_label.config(text="No more questions")
+            self.play_changing_label.config(text="All done!", fg="#000000")
+            self.next_button.config(state=DISABLED)
+
+        # Disable option buttons once user chooses an answer
+        for item in self.movie_button_ref:
+            item.config(state=DISABLED)
+
+    def display_hint(self):
+
+        self.play_changing_label.config(text=f'Hint:\n " {self.quote} "', font=8,
+                                        fg="#996c14", wraplength=300, justify="center")
+        self.hint_button.config(state=DISABLED)
+        hints_used = 0
+        hints_used += 1
 
     # Closes the play GUI
     def close_play(self):
+
         # Reshow root (ie: choose rounds) and end current
         # quiz / allow new quiz to start
         root.deiconify()
         self.play_box.destroy()
+
+        # IMPORTANT: Retrieve number of rounds
+        # won as a number (rather than the 'self' container)
+#         rounds_won = self.rounds_won.get()
+#         rounds_played = self.rounds_played.get()
+#         stats_bundle = [rounds_won, rounds_played]
+#
+#         # Send to stats GUI
+#         Stats(self, stats_bundle)
+#
+#
+# class Stats:
+#
+#     def __init__(self, partner, all_stats_info):
+#
+#         # Disable buttons to prevent program from crashing
+#         partner.hints_button.config(state=DISABLED)
+#         partner.end_game_button.config(state=DISABLED)
+#         partner.stats_button.config(state=DISABLED)
+#         # setup dialogue box and background colour
+#         self.stats_box = Toplevel()
+#
+#         # Disable stats button
+#         partner.stats_button.config(state=DISABLED)
+#
+#         # If users press cross at top, closes stats and
+#         # 'releases' stats button
+#         self.stats_box.protocol('WM_DELETE_WINDOW',
+#                                 partial(self.close_stats, partner))
+#         self.stats_frame = Frame(self.stats_box, width=300,
+#                                  height=200)
+#         self.stats_frame.grid()
+#
+#
+#     def close_stats(self, partner):
+#         """
+#         Closes stats dialogue box (and enables stats button)
+#         """
+#         # Put stats button back to normal...
+#         partner.stats_button.config(state=NORMAL)
+#         partner.hints_button.config(state=NORMAL)
+#         partner.end_game_button.config(state=NORMAL)
+#         self.stats_box.destroy()
+
+
 
 
 # Main Routine
