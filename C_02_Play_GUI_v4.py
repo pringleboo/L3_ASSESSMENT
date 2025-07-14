@@ -450,56 +450,55 @@ class Play:
         hints_used = 0
         hints_used += 1
 
-    # Closes the play GUI
+    # Closes the play GUI and automatically opens stats GUI
     def close_play(self):
 
         # Reshow root (ie: choose rounds) and end current
         # quiz / allow new quiz to start
-        root.deiconify()
+        # root.deiconify()
         self.play_box.destroy()
 
         # IMPORTANT: Retrieve number of rounds
         # won as a number (rather than the 'self' container)
-#         rounds_won = self.rounds_won.get()
-#         rounds_played = self.rounds_played.get()
-#         stats_bundle = [rounds_won, rounds_played]
-#
-#         # Send to stats GUI
-#         Stats(self, stats_bundle)
-#
-#
-# class Stats:
-#
-#     def __init__(self, partner, all_stats_info):
-#
-#         # Disable buttons to prevent program from crashing
-#         partner.hints_button.config(state=DISABLED)
-#         partner.end_game_button.config(state=DISABLED)
-#         partner.stats_button.config(state=DISABLED)
-#         # setup dialogue box and background colour
-#         self.stats_box = Toplevel()
-#
-#         # Disable stats button
-#         partner.stats_button.config(state=DISABLED)
-#
-#         # If users press cross at top, closes stats and
-#         # 'releases' stats button
-#         self.stats_box.protocol('WM_DELETE_WINDOW',
-#                                 partial(self.close_stats, partner))
-#         self.stats_frame = Frame(self.stats_box, width=300,
-#                                  height=200)
-#         self.stats_frame.grid()
-#
-#
-#     def close_stats(self, partner):
-#         """
-#         Closes stats dialogue box (and enables stats button)
-#         """
-#         # Put stats button back to normal...
-#         partner.stats_button.config(state=NORMAL)
-#         partner.hints_button.config(state=NORMAL)
-#         partner.end_game_button.config(state=NORMAL)
-#         self.stats_box.destroy()
+        rounds_won = self.rounds_won.get()
+        rounds_played = self.rounds_played.get()
+        stats_bundle = [rounds_won, rounds_played]
+
+        # Send to stats GUI
+        Stats(self, stats_bundle)
+
+
+class Stats:
+
+    def __init__(self, partner, all_stats_info):
+
+        # setup dialogue box and background colour
+        self.stats_box = Toplevel()
+
+        self.stats_frame = Frame(padx=10, pady=10)
+        self.stats_frame.grid()
+
+        display = Label(self.stats_frame, text="Heyyy")
+        display.grid(row=0, column=0)
+
+        # If users press cross at top, closes stats and
+        # 'releases' stats button
+        # self.stats_box.protocol('WM_DELETE_WINDOW',
+        #                         partial(self.close_stats, partner))
+        # self.stats_frame = Frame(self.stats_box, width=300,
+        #                          height=200)
+        # self.stats_frame.grid()
+
+    #
+    # def close_stats(self, partner):
+    #     """
+    #     Closes stats dialogue box (and enables stats button)
+    #     """
+    #     # Put stats button back to normal...
+    #     partner.stats_button.config(state=NORMAL)
+    #     partner.hints_button.config(state=NORMAL)
+    #     partner.end_game_button.config(state=NORMAL)
+    #     self.stats_box.destroy()
 
 
 
