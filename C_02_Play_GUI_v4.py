@@ -462,7 +462,8 @@ class Play:
         # won as a number (rather than the 'self' container)
         rounds_won = self.rounds_won.get()
         rounds_played = self.rounds_played.get()
-        stats_bundle = [rounds_won, rounds_played]
+        rounds_wanted = self.rounds_wanted.get()
+        stats_bundle = [rounds_won, rounds_played, rounds_wanted]
 
         # Send to stats GUI
         Stats(self, stats_bundle)
@@ -472,14 +473,52 @@ class Stats:
 
     def __init__(self, partner, all_stats_info):
 
+        # Extract information from master list...
+        rounds_won = all_stats_info[0]
+        rounds_played = all_stats_info[1]
+        rounds_wanted = all_stats_info[2]
+
         # setup dialogue box and background colour
         self.stats_box = Toplevel()
 
-        self.stats_frame = Frame(padx=10, pady=10)
+        self.stats_frame = Frame(self.stats_box, width=500,
+                                 height=700, bg="#81e385")
         self.stats_frame.grid()
 
-        display = Label(self.stats_frame, text="Heyyy")
-        display.grid(row=0, column=0)
+        rounds_string = f"{rounds_played} rounds played out of {rounds_wanted}"
+        correct_string = f"{rounds_won} correct"
+        incorrect_string = f"{rounds_played - rounds_won} incorrect"
+        score = (rounds_won / rounds_played) * 100
+        score_string = f"\n% Score = {score:.0f}"
+
+        if score >= 50:
+            comment_string = "Well done!"
+        else:
+            comment_string = "Better luck next time!"
+
+
+        all_stats_strings = [
+            ["Quiz Statistics\n", ("Arial", 14, "bold"), "W"],
+            [rounds_string, ("Arial", 10, "bold"), "W"],
+            [correct_string, ("Arial", 10, "bold"), "W"],
+            [incorrect_string, ("Arial", 10, "bold"), "W"],
+            [score_string, ("Arial", 12, "bold"), "W"],
+            [comment_string, ("Arial", 9, "bold"), "W"],
+        ]
+
+        stats_label_ref_list = []
+        for count, item in enumerate(all_stats_strings):
+            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
+                                     anchor="w", justify="left",
+                                     padx=30, pady=5, bg="#81e385")
+            self.stats_label.grid(row=count, sticky=item[2], padx=10)
+            stats_label_ref_list.append(self.stats_label)
+
+
+        self.close_button = Button(self.stats_frame, text="Close", font=("Arial", 12, "bold"),
+                                   bg="#ffffff",
+                                   command="None", padx=45, pady=5)
+        self.close_button.grid(row=6)
 
         # If users press cross at top, closes stats and
         # 'releases' stats button
