@@ -218,7 +218,7 @@ class Play:
         # List for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
             [self.quiz_frame, "Next Round", "#1ca1e2", lambda: self.new_question(mode), 25, 5, None],
-            [self.hints_stats_frame, "Hints", "#f0a30d", self.display_hint, 12, 0, 0],
+            [self.hints_stats_frame, "Need a hint?", "#f0a30d", self.display_hint, 12, 0, 0],
             [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
 
@@ -274,6 +274,7 @@ class Play:
 
         # Get the win index
         self.win_index = self.movie_button_options.index(self.movie_name)
+        print(f"Win index: {self.win_index}")
 
         # Configure buttons text as the names of the random movies generated for the question
         # Enable option buttons (disabled at the end of the last round)
@@ -485,11 +486,33 @@ class Stats:
                                  height=700, bg="#81e385")
         self.stats_frame.grid()
 
-        rounds_string = f"{rounds_played} rounds played out of {rounds_wanted}"
+        rounds_string = f"\n{rounds_played} rounds played out of {rounds_wanted}"
         correct_string = f"{rounds_won} correct"
         incorrect_string = f"{rounds_played - rounds_won} incorrect"
-        score = (rounds_won / rounds_played) * 100
-        score_string = f"\n% Score = {score:.0f}"
+
+        if rounds_played == 0:
+            score = 0
+        else:
+            score = int((rounds_won / rounds_played) * 100)
+        score_string = f"\nScore = {score:.0f}"
+
+        colour_map = [
+            "#8B0000", # Red end
+            "#A52A2A",
+            "#B04C2C",
+            "#C06F25",
+            "#C78F1C",
+            "#BDAF12",
+            "#9EB210",
+            "#7AA40D",
+            "#569A0B",
+            "#3F850A" # Green end
+        ]
+
+        if score == 0:
+            fg_colour = colour_map[0]
+        else:
+            fg_colour = colour_map[int(str(score)[:-1]) - 1]
 
         if score >= 50:
             comment_string = "Well done!"
@@ -498,11 +521,11 @@ class Stats:
 
 
         all_stats_strings = [
-            ["Quiz Statistics\n", ("Arial", 14, "bold"), "W"],
+            ["\nQuiz Statistics", ("Arial", 14, "bold"), "W"],
             [rounds_string, ("Arial", 10, "bold"), "W"],
             [correct_string, ("Arial", 10, "bold"), "W"],
             [incorrect_string, ("Arial", 10, "bold"), "W"],
-            [score_string, ("Arial", 12, "bold"), "W"],
+            [score_string, ("Arial", 16, "bold"), "W"],
             [comment_string, ("Arial", 9, "bold"), "W"],
         ]
 
@@ -514,11 +537,15 @@ class Stats:
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
+        print(stats_label_ref_list)
+        self.score_label = stats_label_ref_list[4]
+        self.score_label.config(fg=fg_colour)
+
 
         self.close_button = Button(self.stats_frame, text="Close", font=("Arial", 12, "bold"),
                                    bg="#ffffff",
                                    command="None", padx=45, pady=5)
-        self.close_button.grid(row=6)
+        self.close_button.grid(row=6, pady=15)
 
         # If users press cross at top, closes stats and
         # 'releases' stats button
