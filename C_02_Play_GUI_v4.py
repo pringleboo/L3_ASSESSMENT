@@ -202,10 +202,9 @@ class Play:
         for item in range(0, 4):
 
             self.option_button = Button(self.option_frame, font=("Arial", 12, "bold"),
-                                        text="Option", command=partial(self.round_results, item),
+                                        text="Option", command=self.round_results(item),
                                         width=32, bg="#f2f2f2")
-            self.option_button.grid(row=item,
-                                    padx=5, pady=2)
+            self.option_button.grid(row=item, padx=5, pady=2)
 
             self.movie_button_ref.append(self.option_button)
 
@@ -486,6 +485,11 @@ class Stats:
                                  height=700, bg="#81e385")
         self.stats_frame.grid()
 
+        # If users press cross at top, closes stats and
+        # 'releases' stats button
+        self.stats_box.protocol('WM_DELETE_WINDOW',
+                                partial(self.close_stats, partner))
+
         rounds_string = f"\n{rounds_played} rounds played out of {rounds_wanted}"
         correct_string = f"{rounds_won} correct"
         incorrect_string = f"{rounds_played - rounds_won} incorrect"
@@ -542,29 +546,19 @@ class Stats:
         self.score_label.config(fg=fg_colour)
 
 
-        self.close_button = Button(self.stats_frame, text="Close", font=("Arial", 12, "bold"),
-                                   bg="#ffffff",
-                                   command="None", padx=45, pady=5)
+        self.close_button = Button(self.stats_frame, text="Close",
+                                   font=("Arial", 12, "bold"), bg="#ffffff",
+                                   command=self.close_stats,
+                                   padx=45, pady=5)
         self.close_button.grid(row=6, pady=15)
 
-        # If users press cross at top, closes stats and
-        # 'releases' stats button
-        # self.stats_box.protocol('WM_DELETE_WINDOW',
-        #                         partial(self.close_stats, partner))
-        # self.stats_frame = Frame(self.stats_box, width=300,
-        #                          height=200)
-        # self.stats_frame.grid()
 
-    #
-    # def close_stats(self, partner):
-    #     """
-    #     Closes stats dialogue box (and enables stats button)
-    #     """
-    #     # Put stats button back to normal...
-    #     partner.stats_button.config(state=NORMAL)
-    #     partner.hints_button.config(state=NORMAL)
-    #     partner.end_game_button.config(state=NORMAL)
-    #     self.stats_box.destroy()
+
+    def close_stats(self):
+        """
+        Closes stats dialogue box
+        """
+        self.stats_box.destroy()
 
 
 
