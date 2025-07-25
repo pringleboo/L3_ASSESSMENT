@@ -27,7 +27,7 @@ class StartQuiz:
 
         # String for the intro label
         intro_string = ("In each round you will be given a set of emojis "
-                        "that you must use as clue to guess the movie they represent."
+                        "that you must use as clues to guess the movie they represent."
                         "If you get stuck, click the hint button to get a quote from the movie.")
 
         background_colour = "#f5ebc1"
@@ -201,8 +201,10 @@ class Play:
         # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
 
+            print(f"item = {item}")
+
             self.option_button = Button(self.option_frame, font=("Arial", 12, "bold"),
-                                        text="Option", command=self.round_results(item),
+                                        text="Option", command=partial(self.round_results, item),
                                         width=32, bg="#f2f2f2")
             self.option_button.grid(row=item, padx=5, pady=2)
 
@@ -385,7 +387,7 @@ class Play:
         and adds results to stats list.
         """
 
-        print(user_choice)
+        print(f"selected item - {user_choice}")
         print(f"Win button number: {self.win_index + 1}")
 
         if user_choice == self.win_index:
@@ -453,9 +455,6 @@ class Play:
     # Closes the play GUI and automatically opens stats GUI
     def close_play(self):
 
-        # Reshow root (ie: choose rounds) and end current
-        # quiz / allow new quiz to start
-        # root.deiconify()
         self.play_box.destroy()
 
         # IMPORTANT: Retrieve number of rounds
@@ -484,11 +483,6 @@ class Stats:
         self.stats_frame = Frame(self.stats_box, width=500,
                                  height=700, bg="#81e385")
         self.stats_frame.grid()
-
-        # If users press cross at top, closes stats and
-        # 'releases' stats button
-        self.stats_box.protocol('WM_DELETE_WINDOW',
-                                partial(self.close_stats, partner))
 
         rounds_string = f"\n{rounds_played} rounds played out of {rounds_wanted}"
         correct_string = f"{rounds_won} correct"
@@ -545,21 +539,27 @@ class Stats:
         self.score_label = stats_label_ref_list[4]
         self.score_label.config(fg=fg_colour)
 
-
         self.close_button = Button(self.stats_frame, text="Close",
                                    font=("Arial", 12, "bold"), bg="#ffffff",
-                                   command=self.close_stats,
+                                   command=partial(self.close_stats, partner),
                                    padx=45, pady=5)
         self.close_button.grid(row=6, pady=15)
 
+        # If users press cross at top, closes stats and
+        # 'releases' stats button
+        self.stats_box.protocol('WM_DELETE_WINDOW',
+                                partial(self.close_stats, partner))
 
 
-    def close_stats(self):
+    def close_stats(self, partner):
         """
         Closes stats dialogue box
         """
-        self.stats_box.destroy()
 
+        # Reshow root (ie: choose rounds) and end current
+        # quiz / allow new quiz to start
+        root.deiconify()
+        self.stats_box.destroy()
 
 
 
