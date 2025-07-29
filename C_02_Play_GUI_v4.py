@@ -6,10 +6,6 @@ from PIL import Image, ImageTk
 
 
 
-
-
-
-
 class StartQuiz:
     """
     Initial Quiz interface (asks users how many rounds they
@@ -154,20 +150,6 @@ class Play:
         self.quiz_frame = Frame(self.play_box, padx=10, pady=10)
         self.quiz_frame.grid()
 
-        # IMAGES
-
-        # # Randomly select the next movie, place data into a list
-        # [movie_data, self.movie_button_options] = get_data(None)
-        #
-        # # Extract the movie name, filename, and quote from the list
-        # self.movie_name = movie_data[0]
-        # file_name = f"{movie_data[1]}.png"
-        # quote = movie_data[2]
-        # num_of_emojis = int(movie_data[3])
-        # self.movie_button_options.append(self.movie_name)
-
-        # LABELS
-
         background_colour = "#f5ebc1"
 
         # List for label details (text | font | background | row)
@@ -303,7 +285,13 @@ class Play:
 
             # Open the csv file and randomly chose a row
             file = open("000_movie_quotes_emoji_v2.csv", "r")
-            random_movie = random.choice(list(csv.reader(file, delimiter=",")))
+            potential_movie = random.choice(list(csv.reader(file, delimiter=",")))
+
+            if potential_movie[0] not in self.other_movie_names and potential_movie != self.selected_movie_data[0]:
+                random_movie = potential_movie
+            else:
+
+
 
             # Let the first random selection be the chosen movie
             # So the 2nd, 3rd, and 4th loop should only extract a movie name (we need 3 to
