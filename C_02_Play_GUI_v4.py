@@ -280,27 +280,28 @@ class Play:
         self.selected_movie_data = []
         self.other_movie_names = []
 
+        i = 0
         # Loop 4 times (to get 4 random movies for the 2x2 grid)
-        for i in range(4):
+        while len(self.other_movie_names) < 3:
 
             # Open the csv file and randomly chose a row
             file = open("000_movie_quotes_emoji_v2.csv", "r")
             potential_movie = random.choice(list(csv.reader(file, delimiter=",")))
 
-            if potential_movie[0] not in self.other_movie_names and potential_movie != self.selected_movie_data[0]:
-                random_movie = potential_movie
-            else:
+            # Let the first random movies be the chosen movie
+            if i == 0:
+                self.selected_movie_data = potential_movie
 
+            # If the potential movie is not already in the list (or is the selected movie), then we can use it
+            # This should prevent deplicate movies being extracted for the same question
+            elif potential_movie[0] not in self.other_movie_names and potential_movie[0] != self.selected_movie_data[0]:
+                self.other_movie_names.append(potential_movie[0])
 
+            # Print the count for testing purposes
+            print(f"LOOP {i}")
+            i += 1 # add to count
 
-            # Let the first random selection be the chosen movie
-            # So the 2nd, 3rd, and 4th loop should only extract a movie name (we need 3 to
-            # be incorrect answers). For these three we don't need to extract any of the other data (e.g. filename)
-            if i >= 1:
-                self.other_movie_names.append(random_movie[0])
-
-            else:
-                self.selected_movie_data = random_movie
+        print(f"FINAL COUNT = {i}")
 
         # Extract the movie name, filename, and quote from the list
         self.movie_name = self.selected_movie_data[0]
