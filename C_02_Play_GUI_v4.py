@@ -26,6 +26,7 @@ class StartQuiz:
                         "that you must use as clues to guess the movie they represent."
                         "If you get stuck, click the hint button to get a quote from the movie.")
 
+        # BG colour for labels and frames
         background_colour = "#f5ebc1"
 
         # List of labels to be made (text | font | fg)
@@ -43,6 +44,7 @@ class StartQuiz:
                                justify="left", pady=10, padx=20)
             make_label.grid(row=count)
 
+            # Add the label to a list to extract from
             start_label_ref.append(make_label)
 
         # Extract changing label so it can be configured later
@@ -69,24 +71,26 @@ class StartQuiz:
             [self.play_frame, "Hard Mode", "#f0a30d", lambda: self.check_rounds("Hard"), 11, 0, 1],
         ]
 
-        # Create buttons and add to list
-        play_ref_list = []
+        # Create buttons using the list
         for item in play_button_list:
             make_play_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", 16, "bold"),
                                          fg="#FFFFFF", width=item[4])
             make_play_button.grid(row=item[5], column=item[6])
 
-            play_ref_list.append(make_play_button)
-
-        # Change the frame backgrounds
+        # Change the frames background colours
         self.start_frame.config(bg=background_colour)
         self.entry_area_frame.config(bg=background_colour)
 
     # Checks number of rounds enters is a valid input
     def check_rounds(self, mode):
 
-        # Retrieve rounds wanted from teh entry form
+        """
+        When normal / hard button pressed, check the number of rounds wanted is a valid input
+        (i.e. an integer above 0)
+        """
+
+        # Retrieve rounds wanted from the entry form
         rounds_wanted = self.num_rounds_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
@@ -95,22 +99,25 @@ class StartQuiz:
 
         has_errors = "no"
 
-        # Checks that the number of rounds wanted is above zero
+        # Checks that the number of rounds wanted is above zero and not an invalid input
         try:
             rounds_wanted = int(rounds_wanted)
             if rounds_wanted > 0:
+
                 # Invoke Play Class (and take across number of rounds)
                 Play(rounds_wanted, mode)
+
                 # Hide root_window (ie: hide rounds choice window)
                 root.withdraw()
 
             else:
                 has_errors = "yes"
 
+        # If it's an invalid input (i.e. a letter)
         except ValueError:
             has_errors = "yes"
 
-        # Display the error if necessary
+        # Display the error if necessary by configuring the changing label
         if has_errors == "yes":
             self.changing_label.config(text="Oops - Please enter a whole number more than 0",
                                        fg="#990000", font=("Arial", "9", "bold"))
@@ -125,87 +132,82 @@ class Play:
 
     def __init__(self, how_many, mode):
 
-        self.rounds_won = IntVar()
-        self.full_label = None
-        self.final_image = None
-        self.movie_button_options = []
-        self.num_of_emojis = None
-        self.quote = None
-        self.file_name = None
-        self.movie_name = None
-        self.other_movie_names = None
-        self.selected_movie_data = None
+        # Bring the Play GUI to the front
         self.play_box = Toplevel()
 
-        # Create win index variable
-        self.win_index = None
+        # Create an empty list for movie button options
+        self.movie_button_options = []
+
+        # Set up rounds_won as an integer variable
+        self.rounds_won = IntVar()
 
         # Rounds played - start with zero
         self.rounds_played = IntVar()
         self.rounds_played.set(0)
 
+        # Set rounds wanted to the number specified in the start GUI
         self.rounds_wanted = IntVar()
         self.rounds_wanted.set(how_many)
 
+        # Create the play frame and set to grid
         self.quiz_frame = Frame(self.play_box, padx=10, pady=10)
         self.quiz_frame.grid()
 
+        # BG colour for labels and frame
         background_colour = "#f5ebc1"
 
-        # List for label details (text | font | background | row)
+        # List for label details (text | font | row)
         play_labels_list = [
             [f"Round # of {how_many}", ("Arial", "16", "bold"), 0],
             ["Select an option", ("Arial", "18"), 3]
         ]
 
+        # Create the two labels using the list above
         play_labels_ref = []
         for item in play_labels_list:
             self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
                                     bg=background_colour, wraplength=300, justify="left")
             self.make_label.grid(row=item[2], pady=10, padx=10)
 
+            # add the label to a list so it can be extracted
             play_labels_ref.append(self.make_label)
 
         # Extract labels so they can be configured with each new question
         self.heading_label = play_labels_ref[0]
         self.play_changing_label = play_labels_ref[1]
 
-        # Frame to hold hints and stats buttons
-        self.hints_stats_frame = Frame(self.quiz_frame)
-        self.hints_stats_frame.grid(row=6)
-
-        # OPTION BUTTONS
+        # Create frame to hold movie option buttons
         self.option_frame = Frame(self.quiz_frame)
         self.option_frame.grid(row=2)
 
+        # Create movie option buttons. For now they will display 'Option'
+        # When a button is clicked, it sends user to round_results to check their answer
         self.movie_button_ref = []
-
-        # Create four buttons in a 2 x 2 grid
         for item in range(0, 4):
-
-            print(f"item = {item}")
-
             self.option_button = Button(self.option_frame, font=("Arial", 12, "bold"),
                                         text="Option", command=partial(self.round_results, item),
                                         width=32, bg="#f2f2f2")
             self.option_button.grid(row=item, padx=5, pady=2)
 
+            # Add the button to a list so it can extracted and configured later on
             self.movie_button_ref.append(self.option_button)
 
+        # Create frame to hold hint and end buttons
+        self.hints_end_frame = Frame(self.quiz_frame)
+        self.hints_end_frame.grid(row=6)
 
-        # CONTROL BUTTONS
-
-        self.control_frame = Frame(self.quiz_frame)
-        self.control_frame.grid(row=3)
-
-        # List for buttons (frame | text | bg | command | width | row | column)
+        # List for button details (frame | text | bg | command | width | row | column)
+        # Note we are also specifying the 'Next Round' button here
         control_button_list = [
             [self.quiz_frame, "Next Round", "#1ca1e2", lambda: self.new_question(mode), 25, 5, None],
-            [self.hints_stats_frame, "Need a hint?", "#f0a30d", self.display_hint, 12, 0, 0],
-            [self.hints_stats_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
+            [self.hints_end_frame, "Need a hint?", "#f0a30d", self.display_hint, 12, 0, 0],
+            [self.hints_end_frame, "End", "#ff3232", self.close_play, 12, 0, 1],
         ]
 
-        # Create buttons and add to list
+        # Create the control buttons
+        # When 'Next Round' is pressed --> go to 'new_question' function
+        # When hint button is pressed --> go to 'display_hint' function
+        # When end button pressed --> go to 'close_play' function
         control_ref_list = []
         for item in control_button_list:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
@@ -213,9 +215,10 @@ class Play:
                                          fg="#FFFFFF", width=item[4])
             make_control_button.grid(row=item[5], column=item[6])
 
+            # Add buttons to list so they can be extracted
             control_ref_list.append(make_control_button)
 
-        # Retrieve next, stats and end button so that they can be configured
+        # Retrieve next, hints and end button so that they can be configured (enabled and disabled) later
         self.next_button = control_ref_list[0]
         self.hint_button = control_ref_list[1]
         self.end_button = control_ref_list[2]
@@ -223,7 +226,7 @@ class Play:
         # Change the frame backgrounds
         self.quiz_frame.config(bg=background_colour)
         self.option_frame.config(bg=background_colour)
-        self.hints_stats_frame.config(bg=background_colour)
+        self.hints_end_frame.config(bg=background_colour)
 
         # self.stats_button.config(state=DISABLED)
 
@@ -470,7 +473,7 @@ class Stats:
         self.stats_box = Toplevel()
 
         self.stats_frame = Frame(self.stats_box, width=500,
-                                 height=700, bg="#81e385")
+                                 height=700)
         self.stats_frame.grid()
 
         rounds_string = f"\n{rounds_played} rounds played out of {rounds_wanted}"
@@ -503,9 +506,13 @@ class Stats:
 
         if score >= 50:
             comment_string = "Well done!"
+            bg_colour ="#81e385" # Green
         else:
             comment_string = "Better luck next time!"
+            bg_colour = "#e38191" # Pink
 
+        # Configure the background colour of the GUI
+        self.stats_frame.config(bg=bg_colour)
 
         all_stats_strings = [
             ["\nQuiz Statistics", ("Arial", 14, "bold"), "W"],
@@ -520,7 +527,7 @@ class Stats:
         for count, item in enumerate(all_stats_strings):
             self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
                                      anchor="w", justify="left",
-                                     padx=30, pady=5, bg="#81e385")
+                                     padx=30, pady=5, bg=bg_colour)
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
