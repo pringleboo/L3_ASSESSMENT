@@ -223,104 +223,104 @@ class Play:
         self.hint_button = control_ref_list[1]
         self.end_button = control_ref_list[2]
 
-        # Change the frame backgrounds
+        # Change the frame background colours
         self.quiz_frame.config(bg=background_colour)
         self.option_frame.config(bg=background_colour)
         self.hints_end_frame.config(bg=background_colour)
 
-        # self.stats_button.config(state=DISABLED)
-
         # Once interface has been created, invoke new
-        # question function for first round.
+        # question function for first round
         self.new_question(mode)
 
 
     def new_question(self, mode):
         """
-        Configures round heading, and fills out option button in a shuffled order,
-        then disables next question button.
+        Gets the next question ready, configures round heading,
+        populates option buttons
         """
 
-        # Generate data to populate the GUI with
+        # Call the get_data function to generate data
+        # (i.e. movie options and an image) for the question
         self.get_data(mode)
 
-        # Retrieve number of rounds played, add one to it and configure heading
+        # Retrieve number of rounds played and wanted so they can be counted with each round
         rounds_played = self.rounds_played.get()
         rounds_wanted = self.rounds_wanted.get()
 
         # Reset changing label
         self.play_changing_label.config(text="Select an option", fg="#000000")
 
-        # Update heading label with each new question
+        # Update heading label with new rounds variables
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
 
-        # Shuffle buttons lists so they display in random positions
+        # Shuffle buttons lists so movie option buttons display in random positions
         random.shuffle(self.movie_button_options)
-        print(f"Shuffled movie button options: {self.movie_button_options}")
 
-        # Get the win index
+        # Get the win index to later compare users selected answer
         self.win_index = self.movie_button_options.index(self.movie_name)
-        print(f"Win index: {self.win_index}")
 
         # Configure buttons text as the names of the random movies generated for the question
-        # Enable option buttons (disabled at the end of the last round)
-
         for count, item in enumerate(self.movie_button_ref):
 
             item.config(text=self.movie_button_options[count], bg="#f2f2f2", state=NORMAL)
 
+        # Disable next button until user has selected an answer
         self.next_button.config(state=DISABLED)
+
+        # Enable the hints button
         self.hint_button.config(state=NORMAL)
 
 
     def get_data(self, mode):
         """
-        Retrieves movie name, image file name, and the quote
-        from the csv, so it can be used for the rounds
+        Retrieves movie name, image file name, movie quote and number of emojis
+        from the csv, so it can be used for the questions
         """
 
-        # Create separate lists of data to populate
+        # Create separate lists to populate with data
         self.selected_movie_data = []
         self.other_movie_names = []
 
-        i = 0
-        # Loop 4 times (to get 4 random movies for the 2x2 grid)
+        i = 0 # Use as loop counter
+        # Loop 4 times (to get 4 random movies for the 1x4 grid)
         while len(self.other_movie_names) < 3:
 
             # Open the csv file and randomly chose a row
             file = open("000_movie_quotes_emoji_v2.csv", "r")
             potential_movie = random.choice(list(csv.reader(file, delimiter=",")))
 
-            # Let the first random movies be the chosen movie
+            # Let the first random movie be the chosen movie (the answer to the question)
             if i == 0:
                 self.selected_movie_data = potential_movie
 
             # If the potential movie is not already in the list (or is the selected movie), then we can use it
             # This should prevent deplicate movies being extracted for the same question
             elif potential_movie[0] not in self.other_movie_names and potential_movie[0] != self.selected_movie_data[0]:
-                self.other_movie_names.append(potential_movie[0])
+                self.movie_button_options.append(potential_movie[0])
 
-            # Print the count for testing purposes
-            print(f"LOOP {i}")
             i += 1 # add to count
 
-        print(f"FINAL COUNT = {i}")
-
-        # Extract the movie name, filename, and quote from the list
+        # Extract the movie name, filename, quote, and no. of emojis from the list
         self.movie_name = self.selected_movie_data[0]
-        self.file_name = f"{self.selected_movie_data[1]}.png"
+        self.file_name = f"{self.selected_movie_data[1]}.png" # include '.png' file format for later
         self.quote = self.selected_movie_data[2]
         self.num_of_emojis = int(self.selected_movie_data[3])
 
-        self.movie_button_options = self.other_movie_names
+        # Add the chosen movie to the option button list (so we have 4 items)
         self.movie_button_options.append(self.movie_name)
 
+        # Call image_display function to generate image
         self.image_display(mode)
 
 
     def image_display(self, mode):
+        """
+        Extracts image file from folder and adjusts image depending on normal / hard mode.
+        For hard mode the image is cropped case-specifically to remove some emojis so the
+        cropped image only has 2 emojis visible, making it harder for the user
+        """
 
-        # Open the image
+        # Open the image corresponding to the chosen movie
         raw_image = Image.open(f'image_files/{self.file_name}')
 
         if mode == "Normal":
@@ -329,15 +329,14 @@ class Play:
             width = 330
             height = 60
 
-            # Resize the image to fit the width of the 2x2 button grid
+            # Resize the image to fit the width of the movie option buttons
             # No need to crop the image for Normal Mode
             resized_image = raw_image.resize((width, height))
             self.final_image = ImageTk.PhotoImage(resized_image)
 
-            # Display the final image in the grid
+            # Display the final image in the quiz frame grid
             self.full_label = Label(self.quiz_frame, image=self.final_image)
             self.full_label.grid(row=1)
-
 
         # When mode is 'Hard'
         else:
@@ -360,7 +359,7 @@ class Play:
             # Crop the image using the crop values from above
             cropped_image = raw_image.crop(crop)
 
-            # Width is the same for all (matches the buttons width)
+            # Width is the same for all (matches the option buttons width)
             width = 330
 
             # Scale the cropped image to fit into the grid nicely
