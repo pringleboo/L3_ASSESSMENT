@@ -1,7 +1,7 @@
 import csv
 import random
 from tkinter import *
-from functools import partial  # To prevent unwanted windows
+from functools import partial
 from PIL import Image, ImageTk
 
 
@@ -84,7 +84,6 @@ class StartQuiz:
 
     # Checks number of rounds enters is a valid input
     def check_rounds(self, mode):
-
         """
         When normal / hard button pressed, check the number of rounds wanted is a valid input
         (i.e. an integer above 0)
@@ -108,6 +107,7 @@ class StartQuiz:
                 Play(rounds_wanted, mode)
 
                 # Hide root_window (ie: hide rounds choice window)
+                print("hiding root ??")
                 root.withdraw()
 
             else:
@@ -132,6 +132,10 @@ class Play:
 
     def __init__(self, how_many, mode):
 
+        print("got to play")
+        print("how many", how_many)
+        print("mode", mode)
+
         # Bring the Play GUI to the front
         self.play_box = Toplevel()
 
@@ -152,6 +156,8 @@ class Play:
         # Create the play frame and set to grid
         self.quiz_frame = Frame(self.play_box, padx=10, pady=10)
         self.quiz_frame.grid()
+
+        print("theoretically made frame?")
 
         # BG colour for labels and frame
         background_colour = "#f5ebc1"
@@ -180,7 +186,7 @@ class Play:
         self.option_frame = Frame(self.quiz_frame)
         self.option_frame.grid(row=2)
 
-        # Create movie option buttons. For now they will display 'Option'
+        # Create movie option buttons. For now, they will display 'Option'
         # When a button is clicked, it sends user to round_results to check their answer
         self.movie_button_ref = []
         for item in range(0, 4):
@@ -189,7 +195,7 @@ class Play:
                                         width=32, bg="#f2f2f2")
             self.option_button.grid(row=item, padx=5, pady=2)
 
-            # Add the button to a list so it can extracted and configured later on
+            # Add the button to a list so it can be extracted and configured later on
             self.movie_button_ref.append(self.option_button)
 
         # Create frame to hold hint and end buttons
@@ -230,7 +236,12 @@ class Play:
 
         # Once interface has been created, invoke new
         # question function for first round
+
+        print("making a new quesiton?")
+
         self.new_question(mode)
+
+        print("new question made!")
 
 
     def new_question(self, mode):
@@ -373,17 +384,13 @@ class Play:
 
     def round_results(self, user_choice):
         """
-        Retrieves which button was pushed (index 0 - 3), retrieves
-        score and then compares it with median, updates results
-        and adds results to stats list.
+        Retrieves which option button was pushed, checks if it is the correct answer
+        Configures buttons to red / green to show the user the answer.
         """
 
-        print(f"selected item - {user_choice}")
-        print(f"Win button number: {self.win_index + 1}")
-
+        # If the user is correct!
         if user_choice == self.win_index:
             result_text = "Correct!"
-            print(result_text)
             label_colour = "#009900" # green text for changing label
             selected_btn_bg = "#00E000" # green background colour for selected button
 
@@ -392,7 +399,7 @@ class Play:
             rounds_won += 1
             self.rounds_won.set(rounds_won)
 
-
+        # If the user is wrong
         else:
             result_text = "Incorrect"
             print(result_text)
@@ -402,31 +409,32 @@ class Play:
             # Highlight the correct button as green so users can compare their answer
             self.movie_button_ref[self.win_index].config(bg="#00E000")
 
+        # Change the BG colour of the chosen button to be either red / green
         self.movie_button_ref[user_choice].config(bg=selected_btn_bg)
 
+        # Edit the changing label to state the outcome of the question
         self.play_changing_label.config(text=result_text, fg=label_colour, font=("Arial", 18))
 
-        # Enables stats & next buttons, disable colour buttons
+        # Enables stats & next buttons
         self.next_button.config(state=NORMAL)
         self.hint_button.config(state=DISABLED)
 
-        # Add one to the number of rounds played and retrieve
-        # the number of rounds won
+        # Add one to the number of rounds played
         rounds_played = self.rounds_played.get()
         rounds_played += 1
         self.rounds_played.set(rounds_played)
 
-        # Check to see if game is over
+        # Retrieve to check if quiz should end
         rounds_wanted = self.rounds_wanted.get()
-
         rounds_won = self.rounds_won.get()
 
-        # Code for when game ends
+        # When the quiz is finished (no more questions)
         if rounds_played == rounds_wanted:
+
             # Work out success rate
             print(f"You won {rounds_won} out of {rounds_played}")
 
-            # Configure end game labels / buttons
+            # Configure end game labels / buttons for end of quiz
             self.heading_label.config(text="No more questions")
             self.play_changing_label.config(text="All done!", fg="#000000")
             self.next_button.config(state=DISABLED)
@@ -436,16 +444,25 @@ class Play:
             item.config(state=DISABLED)
 
     def display_hint(self):
+        """
+        When hint button is pressed, configures play changing label to display the movie quote
+        to help the user
+        """
 
+        # Configure the changing label with the hint
         self.play_changing_label.config(text=f'Hint:\n " {self.quote} "', font=8,
                                         fg="#996c14", wraplength=300, justify="center")
+
+        # Disable the hint button
         self.hint_button.config(state=DISABLED)
-        hints_used = 0
-        hints_used += 1
 
-    # Closes the play GUI and automatically opens stats GUI
+
     def close_play(self):
+        """
+        Closes the play GUI and automatically opens stats GUI
+        """
 
+        # Close play GUI
         self.play_box.destroy()
 
         # IMPORTANT: Retrieve number of rounds
@@ -453,38 +470,51 @@ class Play:
         rounds_won = self.rounds_won.get()
         rounds_played = self.rounds_played.get()
         rounds_wanted = self.rounds_wanted.get()
+
+        # Create a bundle of variable to take over to stats class
         stats_bundle = [rounds_won, rounds_played, rounds_wanted]
 
-        # Send to stats GUI
+        # Open stats
         Stats(self, stats_bundle)
 
 
 class Stats:
+    """
+    Popup GUI that displays relevant stats before the user closes the program / initiates new quiz
+    """
 
     def __init__(self, partner, all_stats_info):
 
-        # Extract information from master list...
+        # Extract information from the stats bundle...
         rounds_won = all_stats_info[0]
         rounds_played = all_stats_info[1]
         rounds_wanted = all_stats_info[2]
 
-        # setup dialogue box and background colour
+        # Make the GUI pop up to user
         self.stats_box = Toplevel()
 
-        self.stats_frame = Frame(self.stats_box, width=500,
-                                 height=700)
+        # Setup frame and grid
+        self.stats_frame = Frame(self.stats_box, width=500, height=700)
         self.stats_frame.grid()
 
+        # Strings for stats labels containing stats
         rounds_string = f"\n{rounds_played} rounds played out of {rounds_wanted}"
         correct_string = f"{rounds_won} correct"
         incorrect_string = f"{rounds_played - rounds_won} incorrect"
 
+        # If user did not answer any questions, don't bother calculating a score
         if rounds_played == 0:
             score = 0
+
+        # Otherwise calculate the score based on rounds won and played
         else:
             score = int((rounds_won / rounds_played) * 100)
+
+        # Score string to make into label
         score_string = f"\nScore = {score:.0f}"
 
+        # Create a simple colour map (Red to Green) to colour the score text based on
+        # the value of the score they achieved
         colour_map = [
             "#8B0000", # Red end
             "#A52A2A",
@@ -498,21 +528,30 @@ class Stats:
             "#3F850A" # Green end
         ]
 
+        # Zero score gives deep red
         if score == 0:
             fg_colour = colour_map[0]
+
+        # Retrieve the colour based on the score
+        # (e.g. A score of 28 translates to the number 2 which is used as an index
+        # to extract the 3rd colour from the colour map)
         else:
             fg_colour = colour_map[int(str(score)[:-1]) - 1]
 
+        # When the score is good
         if score >= 50:
             comment_string = "Well done!"
-            bg_colour ="#81e385" # Green
+            bg_colour ="#81e385" # Green BG for the GUI
+
+        # When the score low
         else:
             comment_string = "Better luck next time!"
-            bg_colour = "#e38191" # Pink
+            bg_colour = "#e38191" # Pink BG for the GUI
 
-        # Configure the background colour of the GUI
+        # Configure the background colour of the GUI to reflect how well they did
         self.stats_frame.config(bg=bg_colour)
 
+        # List to create all the stats labels from
         all_stats_strings = [
             ["\nQuiz Statistics", ("Arial", 14, "bold"), "W"],
             [rounds_string, ("Arial", 10, "bold"), "W"],
@@ -522,18 +561,22 @@ class Stats:
             [comment_string, ("Arial", 9, "bold"), "W"],
         ]
 
+        # Create the stats labels and assign them to the grid
         stats_label_ref_list = []
         for count, item in enumerate(all_stats_strings):
             self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
                                      anchor="w", justify="left",
                                      padx=30, pady=5, bg=bg_colour)
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
+
+            # Add the labels to a list so they can be extracted and configured if necessary
             stats_label_ref_list.append(self.stats_label)
 
-        print(stats_label_ref_list)
+        # Extract score label and configure it to have the colour map colour
         self.score_label = stats_label_ref_list[4]
         self.score_label.config(fg=fg_colour)
 
+        # Create a close button to close stats
         self.close_button = Button(self.stats_frame, text="Close",
                                    font=("Arial", 12, "bold"), bg="#ffffff",
                                    command=partial(self.close_stats, partner),
