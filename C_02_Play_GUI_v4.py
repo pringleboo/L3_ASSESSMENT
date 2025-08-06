@@ -107,7 +107,6 @@ class StartQuiz:
                 Play(rounds_wanted, mode)
 
                 # Hide root_window (ie: hide rounds choice window)
-                print("hiding root ??")
                 root.withdraw()
 
             else:
@@ -132,15 +131,11 @@ class Play:
 
     def __init__(self, how_many, mode):
 
-        print("got to play")
-        print("how many", how_many)
-        print("mode", mode)
-
         # Bring the Play GUI to the front
         self.play_box = Toplevel()
 
         # Create an empty list for movie button options
-        self.movie_button_options = []
+        self.movie_option_buttons = []
 
         # Set up rounds_won as an integer variable
         self.rounds_won = IntVar()
@@ -156,8 +151,6 @@ class Play:
         # Create the play frame and set to grid
         self.quiz_frame = Frame(self.play_box, padx=10, pady=10)
         self.quiz_frame.grid()
-
-        print("theoretically made frame?")
 
         # BG colour for labels and frame
         background_colour = "#f5ebc1"
@@ -237,11 +230,7 @@ class Play:
         # Once interface has been created, invoke new
         # question function for first round
 
-        print("making a new quesiton?")
-
         self.new_question(mode)
-
-        print("new question made!")
 
 
     def new_question(self, mode):
@@ -265,15 +254,15 @@ class Play:
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
 
         # Shuffle buttons lists so movie option buttons display in random positions
-        random.shuffle(self.movie_button_options)
+        random.shuffle(self.movie_option_buttons)
 
         # Get the win index to later compare users selected answer
-        self.win_index = self.movie_button_options.index(self.movie_name)
+        self.win_index = self.movie_option_buttons.index(self.movie_name)
 
         # Configure buttons text as the names of the random movies generated for the question
         for count, item in enumerate(self.movie_button_ref):
 
-            item.config(text=self.movie_button_options[count], bg="#f2f2f2", state=NORMAL)
+            item.config(text=self.movie_option_buttons[count], bg="#f2f2f2", state=NORMAL)
 
         # Disable next button until user has selected an answer
         self.next_button.config(state=DISABLED)
@@ -290,11 +279,11 @@ class Play:
 
         # Create separate lists to populate with data
         self.selected_movie_data = []
-        self.other_movie_names = []
+        self.movie_option_buttons = []
 
         i = 0 # Use as loop counter
         # Loop 4 times (to get 4 random movies for the 1x4 grid)
-        while len(self.other_movie_names) < 3:
+        while len(self.movie_option_buttons) < 3:
 
             # Open the csv file and randomly chose a row
             file = open("000_movie_quotes_emoji_v2.csv", "r")
@@ -306,8 +295,8 @@ class Play:
 
             # If the potential movie is not already in the list (or is the selected movie), then we can use it
             # This should prevent deplicate movies being extracted for the same question
-            elif potential_movie[0] not in self.other_movie_names and potential_movie[0] != self.selected_movie_data[0]:
-                self.movie_button_options.append(potential_movie[0])
+            elif potential_movie[0] not in self.movie_option_buttons and potential_movie[0] != self.selected_movie_data[0]:
+                self.movie_option_buttons.append(potential_movie[0])
 
             i += 1 # add to count
 
@@ -318,7 +307,7 @@ class Play:
         self.num_of_emojis = int(self.selected_movie_data[3])
 
         # Add the chosen movie to the option button list (so we have 4 items)
-        self.movie_button_options.append(self.movie_name)
+        self.movie_option_buttons.append(self.movie_name)
 
         # Call image_display function to generate image
         self.image_display(mode)
@@ -430,9 +419,6 @@ class Play:
 
         # When the quiz is finished (no more questions)
         if rounds_played == rounds_wanted:
-
-            # Work out success rate
-            print(f"You won {rounds_won} out of {rounds_played}")
 
             # Configure end game labels / buttons for end of quiz
             self.heading_label.config(text="No more questions")
