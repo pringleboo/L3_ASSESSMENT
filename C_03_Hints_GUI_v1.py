@@ -1,21 +1,19 @@
-    # def to_hints(self):
-    #
-    #     """
-    #     Displays hints for playing game
-    #     :return:
-    #     """
-    #     DisplayHints(self)
+#     """
+#     Displays hints for playing game
+#     :return:
+#     """
+#     DisplayHints(self)
 
-    def new_question(self):
-        """
-        Chooses four colours, works out median for score to beat. Configures
-        buttons with chosen colours
-        """
+def new_question(self):
+    """
+    Chooses four colours, works out median for score to beat. Configures
+    buttons with chosen colours
+    """
 
-        # Retrieve number of rounds played, add one to it and configure heading
-        rounds_played = self.rounds_played.get()
-        rounds_played += 1
-        self.rounds_played.set(rounds_played)
+    # Retrieve number of rounds played, add one to it and configure heading
+    rounds_played = self.rounds_played.get()
+    rounds_played += 1
+    self.rounds_played.set(rounds_played)
 
 
 class DisplayHints:
@@ -83,3 +81,5 @@ class DisplayHints:
         # Put hints button back to normal...
         partner.hints_button.config(state=NORMAL)
         self.hints_box.destroy()
+    # def to_hints(self):
+    #

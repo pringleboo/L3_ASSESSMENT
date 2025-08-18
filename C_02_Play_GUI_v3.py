@@ -254,7 +254,6 @@ class Play:
 
         # Extract heading label so it can be configured with each new question
         self.heading_label = play_labels_ref[0]
-        print(self.heading_label)
 
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
@@ -316,8 +315,8 @@ class Play:
 
     def new_question(self):
         """
-        Chooses four colours, works out median for score to beat. Configures
-        buttons with chosen colours
+        Configures round heading, and fills out option button in a shuffled order,
+        then disables next question button.
         """
 
         # Retrieve number of rounds played, add one to it and configure heading
@@ -329,9 +328,6 @@ class Play:
         # Update heading label with each new question
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
 
-        win_index = random.randint(0, 3)
-        # config(text=movie_name[count + 1], state=NORMAL)
-
         # Shuffle buttons lists so they display in random positions
         random.shuffle(self.movie_button_options)
 
@@ -342,7 +338,6 @@ class Play:
             item.config(text=self.movie_button_options[count], state=NORMAL)
 
         self.next_button.config(state=DISABLED)
-
 
     # Closes the play GUI
     def close_play(self):
