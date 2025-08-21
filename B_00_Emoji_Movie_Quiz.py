@@ -390,8 +390,6 @@ class Play:
 
         # If the user is wrong
         else:
-            result_text = "Incorrect"
-            print(result_text)
             label_colour = "#ff3232" # red text for changing label
             selected_btn_bg = "#ff3232" # red background colour for selected button
 
